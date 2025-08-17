@@ -13,10 +13,6 @@
 			"param_folder": {
 				"type": "string",
 				"defaultValue": "sales"
-			},
-			"param_file": {
-				"type": "string",
-				"defaultValue": "sales_march.csv"
 			}
 		},
 		"annotations": [],
