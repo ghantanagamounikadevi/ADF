@@ -7,16 +7,13 @@
 		},
 		"parameters": {
 			"param_container": {
-				"type": "string",
-				"defaultValue": "sales"
+				"type": "string"
 			},
 			"param_folder": {
-				"type": "string",
-				"defaultValue": "sales"
+				"type": "string"
 			},
 			"param_filename": {
-				"type": "string",
-				"defaultValue": "Client_data.csv"
+				"type": "string"
 			}
 		},
 		"annotations": [],
