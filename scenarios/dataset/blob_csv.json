@@ -13,6 +13,10 @@
 			"param_folder": {
 				"type": "string",
 				"defaultValue": "sales"
+			},
+			"param_filename": {
+				"type": "string",
+				"defaultValue": "Client_data.csv"
 			}
 		},
 		"annotations": [],
@@ -21,7 +25,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "@dataset().param_file",
+					"value": "@dataset().param_folder",
 					"type": "Expression"
 				},
 				"folderPath": {
