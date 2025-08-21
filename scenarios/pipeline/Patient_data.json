@@ -139,12 +139,12 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "blob_csv",
+						"referenceName": "blob_withoutSASURI",
 						"type": "DatasetReference",
 						"parameters": {
-							"param_container": "sales",
-							"param_folder": "patient",
-							"param_filename": "Client_data.csv"
+							"p_container": "sales",
+							"p_folder": "patient",
+							"p_file": "Client_data.csv"
 						}
 					}
 				],
