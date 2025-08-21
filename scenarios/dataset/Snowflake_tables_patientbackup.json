@@ -1,0 +1,16 @@
+{
+	"name": "Snowflake_tables_patientbackup",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Snowflake1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "MOUNIKAADF",
+			"table": "PATIENT_RECORDS_BACKUP"
+		}
+	}
+}

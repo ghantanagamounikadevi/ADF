@@ -30,19 +30,6 @@
 								"param_container": "sales",
 								"param_folder": "patient",
 								"param_filename": "Client_date.csv"
-							},
-							"sink1": {
-								"param_container": "sales",
-								"param_folder": "patient",
-								"param_filename": "Client_data.csv"
-							}
-						},
-						"linkedServiceParameters": {
-							"sourceblobcsv": {
-								"schemaLinkedService": {
-									"param_container": "sales",
-									"param_folder": "sales"
-								}
 							}
 						}
 					},
@@ -77,18 +64,6 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
@@ -96,81 +71,64 @@
 							{
 								"source": {
 									"name": "PatientID",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "PatientID",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "Department",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "Department",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "CheckupDate",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "CheckupDate",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "HeartRate",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "HeartRate",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "BloodPressure",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "BloodPressure",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "BloodSugar",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
 									"name": "BloodSugar",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								}
 							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
+						]
 					}
 				},
 				"inputs": [
@@ -180,17 +138,6 @@
 						"parameters": {
 							"param_container": "sales",
 							"param_folder": "patient",
-							"param_filename": "Client_data.csv"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "blob_csv",
-						"type": "DatasetReference",
-						"parameters": {
-							"param_container": "destination",
-							"param_folder": "STG_PATIENT_VITALS",
 							"param_filename": "Client_data.csv"
 						}
 					}
