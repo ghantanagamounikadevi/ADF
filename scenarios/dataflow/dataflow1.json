@@ -1,0 +1,54 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "blob_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sourceblobcsv"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "blob_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PatientID as string,",
+				"          Department as string,",
+				"          CheckupDate as date,",
+				"          HeartRate as short,",
+				"          BloodPressure as string,",
+				"          BloodSugar as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceblobcsv",
+				"sourceblobcsv derive(BP_Status = iif(toInteger(BloodPressure) > 140, \"HIGH\", iif(toInteger(BloodPressure) < 90, \"LOW\", \"NORMAL\")),",
+				"          Sugar_Status = iif(toInteger(BloodPressure)>140,'HIGH','NORMAL')) ~> derivedColumn1",
+				"derivedColumn1 filter(!isNan(toInteger(PatientID))) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
