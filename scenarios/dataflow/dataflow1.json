@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "Snowflake_tables_patientbackup",
+						"referenceName": "Snowflaketable_patient_tgt",
 						"type": "DatasetReference"
 					},
 					"name": "sink1"
@@ -50,6 +50,16 @@
 				"derivedColumn1 filter(!isNull(PatientID)) ~> filter1",
 				"derivedColumn2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     input(",
+				"          PATIENT_ID as string,",
+				"          DEPARTMENT as string,",
+				"          CHECKUPDATE as date,",
+				"          HEARTRATE as decimal(38,0),",
+				"          BLOODPRESSURE as decimal(38,0),",
+				"          BLOODSUGAR as decimal(38,0),",
+				"          BP_STATUS as string,",
+				"          SUGAR_STATUS as string",
+				"     ),",
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
