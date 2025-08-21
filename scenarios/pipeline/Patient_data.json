@@ -64,6 +64,12 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
+					"sink": {
+						"type": "SnowflakeV2Sink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
 					"enableStaging": false,
 					"translator": {
 						"type": "TabularTranslator",
@@ -140,6 +146,12 @@
 							"param_folder": "patient",
 							"param_filename": "Client_data.csv"
 						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Snowflake_tables_patientbackup",
+						"type": "DatasetReference"
 					}
 				]
 			}
