@@ -1,0 +1,24 @@
+{
+	"name": "snowflake_dbtarget",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Snowflake1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"param_targettabel": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "SOURCE",
+			"table": {
+				"value": "@dataset().param_targettabel",
+				"type": "Expression"
+			}
+		}
+	}
+}
