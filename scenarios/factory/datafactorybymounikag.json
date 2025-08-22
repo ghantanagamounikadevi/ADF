@@ -1,0 +1,9 @@
+{
+	"name": "datafactorybymounikag",
+	"location": "centralus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "9001d418-c61c-47c8-abb1-d9f5f5d8fc44",
+		"tenantId": "21da155d-1b98-4450-9e6a-0ce4629f8e2e"
+	}
+}

@@ -1,0 +1,163 @@
+{
+	"name": "Lab_Patientdata_Ingest",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SnowflakeV2Sink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "PatientID",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PATIENT_ID",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Department",
+									"type": "String"
+								},
+								"sink": {
+									"name": "DEPARTMENT",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "CheckupDate",
+									"type": "String"
+								},
+								"sink": {
+									"name": "CHECKUPDATE",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"name": "HeartRate",
+									"type": "String"
+								},
+								"sink": {
+									"name": "HEARTRATE",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "BloodPressure",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BLOODPRESSURE",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "BloodSugar\r",
+									"type": "String"
+								},
+								"sink": {
+									"name": "BLOODSUGAR",
+									"type": "Int64"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "Blob_source_BySASURI_link_Forsnowflake",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_container": "sales",
+							"param_folder": "patient",
+							"param_file": "Client_data.csv"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Dataset_snowflake_backuptable",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dataflow1",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"p_container": "sales",
+								"p_folder": "patient",
+								"p_file": "Client_data.csv"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2025-08-22T16:49:37Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

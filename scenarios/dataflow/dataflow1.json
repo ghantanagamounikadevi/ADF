@@ -1,0 +1,84 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Patient_source_csv_Staging",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "dataset_snowflake_patientdata_tgt",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "derivedColumn2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PatientID as string,",
+				"          Department as string,",
+				"          CheckupDate as date 'MM/dd/yyyy',",
+				"          HeartRate as short,",
+				"          BloodPressure as short,",
+				"          BloodSugar as short",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 derive(BP_Status = iif(toInteger(BloodPressure)>140,'HIGH',iif(toInteger(BloodPressure)<90,'LOW','NORMAL')),",
+				"          Sugar_Status = iif(toInteger(BloodSugar)>140,'HIGH','NORMAL')) ~> derivedColumn1",
+				"derivedColumn1 filter(!isNull(PatientID)) ~> filter1",
+				"filter1 derive(Dateconvert = toString(CheckupDate,'dd-MM-yy')) ~> derivedColumn2",
+				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PATIENT_ID as string,",
+				"          DEPARTMENT as string,",
+				"          CHECKUPDATE as date,",
+				"          HEARTRATE as decimal(38,0),",
+				"          BLOODPRESSURE as decimal(38,0),",
+				"          BLOODSUGAR as decimal(38,0),",
+				"          BP_STATUS as string,",
+				"          SUGAR_STATUS as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     stageInsert: true,",
+				"     mapColumn(",
+				"          PATIENT_ID = PatientID,",
+				"          DEPARTMENT = Department,",
+				"          CHECKUPDATE = Dateconvert,",
+				"          HEARTRATE = HeartRate,",
+				"          BLOODPRESSURE = BloodPressure,",
+				"          BLOODSUGAR = BloodSugar,",
+				"          BP_STATUS = BP_Status,",
+				"          SUGAR_STATUS = Sugar_Status",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}
