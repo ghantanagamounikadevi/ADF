@@ -1,0 +1,53 @@
+{
+	"name": "Dataset_snowflake_backuptable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Snowflake1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [
+			{
+				"name": "PATIENT_ID",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "DEPARTMENT",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "CHECKUPDATE",
+				"type": "DATE",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "HEARTRATE",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "BLOODPRESSURE",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "BLOODSUGAR",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "MOUNIKAADF",
+			"table": "PATIENT_RECORDS_BACKUP"
+		}
+	}
+}

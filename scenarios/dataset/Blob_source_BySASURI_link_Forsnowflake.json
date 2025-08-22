@@ -1,0 +1,72 @@
+{
+	"name": "Blob_source_BySASURI_link_Forsnowflake",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"param_container": {
+				"type": "string",
+				"defaultValue": "sales"
+			},
+			"param_folder": {
+				"type": "string",
+				"defaultValue": "patient"
+			},
+			"param_file": {
+				"type": "string",
+				"defaultValue": "Client_data.csv"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().param_file",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().param_folder",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().param_container",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "PatientID",
+				"type": "String"
+			},
+			{
+				"name": "Department",
+				"type": "String"
+			},
+			{
+				"name": "CheckupDate",
+				"type": "String"
+			},
+			{
+				"name": "HeartRate",
+				"type": "String"
+			},
+			{
+				"name": "BloodPressure",
+				"type": "String"
+			},
+			{
+				"name": "BloodSugar",
+				"type": "String"
+			}
+		]
+	}
+}
