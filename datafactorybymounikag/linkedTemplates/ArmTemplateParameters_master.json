@@ -8,6 +8,9 @@
 		"ls_blob_sasUri": {
 			"value": ""
 		},
+		"Blob_for_snowflake_withSASURL_sasUri": {
+			"value": ""
+		},
 		"containerUri": {
 			"value": ""
 		},

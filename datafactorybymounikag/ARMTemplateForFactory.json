@@ -10,6 +10,10 @@
 		"ls_blob_sasUri": {
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'ls_blob'"
+		},
+		"Blob_for_snowflake_withSASURL_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'Blob_for_snowflake_withSASURL'"
 		}
 	},
 	"variables": {
@@ -25,6 +29,19 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"sasUri": "[parameters('ls_blob_sasUri')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Blob_for_snowflake_withSASURL')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"sasUri": "[parameters('Blob_for_snowflake_withSASURL_sasUri')]"
 				}
 			},
 			"dependsOn": []
