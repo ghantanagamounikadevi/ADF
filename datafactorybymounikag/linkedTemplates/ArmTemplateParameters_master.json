@@ -5,11 +5,17 @@
 		"factoryName": {
 			"value": "datafactorybymounikag"
 		},
-		"ls_blob_sasUri": {
+		"Snowflake1_password": {
+			"value": ""
+		},
+		"ls_blob_connectionString": {
 			"value": ""
 		},
 		"Blob_for_snowflake_withSASURL_sasUri": {
 			"value": ""
+		},
+		"Snowflake1_properties_typeProperties_database": {
+			"value": "SNOWFLAKE_LEARNING_DB"
 		},
 		"containerUri": {
 			"value": ""

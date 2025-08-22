@@ -7,13 +7,21 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "datafactorybymounikag"
 		},
-		"ls_blob_sasUri": {
+		"Snowflake1_password": {
 			"type": "secureString",
-			"metadata": "Secure string for 'sasUri' of 'ls_blob'"
+			"metadata": "Secure string for 'password' of 'Snowflake1'"
+		},
+		"ls_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ls_blob'"
 		},
 		"Blob_for_snowflake_withSASURL_sasUri": {
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'Blob_for_snowflake_withSASURL'"
+		},
+		"Snowflake1_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
 		}
 	},
 	"variables": {
@@ -21,17 +29,462 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/ls_blob')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/Lab_Patientdata_Ingest')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SnowflakeV2Sink",
+								"importSettings": {
+									"type": "SnowflakeImportCopyCommand"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "PatientID",
+											"type": "String"
+										},
+										"sink": {
+											"name": "PATIENT_ID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Department",
+											"type": "String"
+										},
+										"sink": {
+											"name": "DEPARTMENT",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "CheckupDate",
+											"type": "String"
+										},
+										"sink": {
+											"name": "CHECKUPDATE",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"name": "HeartRate",
+											"type": "String"
+										},
+										"sink": {
+											"name": "HEARTRATE",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "BloodPressure",
+											"type": "String"
+										},
+										"sink": {
+											"name": "BLOODPRESSURE",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "BloodSugar\r",
+											"type": "String"
+										},
+										"sink": {
+											"name": "BLOODSUGAR",
+											"type": "Int64"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Blob_source_BySASURI_link_Forsnowflake",
+								"type": "DatasetReference",
+								"parameters": {
+									"param_container": "sales",
+									"param_folder": "patient",
+									"param_file": "Client_data.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Dataset_snowflake_backuptable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [
+							{
+								"activity": "Copy data1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {
+										"p_container": "sales",
+										"p_folder": "patient",
+										"p_file": "Client_data.csv"
+									},
+									"sink1": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Blob_source_BySASURI_link_Forsnowflake')]",
+				"[concat(variables('factoryId'), '/datasets/Dataset_snowflake_backuptable')]",
+				"[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Blob_source_BySASURI_link_Forsnowflake')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Blob_for_snowflake_withSASURL",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"param_container": {
+						"type": "string",
+						"defaultValue": "sales"
+					},
+					"param_folder": {
+						"type": "string",
+						"defaultValue": "patient"
+					},
+					"param_file": {
+						"type": "string",
+						"defaultValue": "Client_data.csv"
+					}
+				},
 				"annotations": [],
-				"type": "AzureBlobStorage",
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sasUri": "[parameters('ls_blob_sasUri')]"
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().param_file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().param_folder",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().param_container",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"rowDelimiter": "\n",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PatientID",
+						"type": "String"
+					},
+					{
+						"name": "Department",
+						"type": "String"
+					},
+					{
+						"name": "CheckupDate",
+						"type": "String"
+					},
+					{
+						"name": "HeartRate",
+						"type": "String"
+					},
+					{
+						"name": "BloodPressure",
+						"type": "String"
+					},
+					{
+						"name": "BloodSugar",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Dataset_snowflake_backuptable')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Snowflake1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SnowflakeV2Table",
+				"schema": [
+					{
+						"name": "PATIENT_ID",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "DEPARTMENT",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "CHECKUPDATE",
+						"type": "DATE",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "HEARTRATE",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "BLOODPRESSURE",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "BLOODSUGAR",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "MOUNIKAADF",
+					"table": "PATIENT_RECORDS_BACKUP"
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Snowflake1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Patient_source_csv_Staging')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_container": {
+						"type": "string",
+						"defaultValue": "sales"
+					},
+					"p_folder": {
+						"type": "string",
+						"defaultValue": "patient"
+					},
+					"p_file": {
+						"type": "string",
+						"defaultValue": "Client_data.csv"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().p_file",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().p_folder",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().p_container",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PatientID",
+						"type": "String"
+					},
+					{
+						"name": "Department",
+						"type": "String"
+					},
+					{
+						"name": "CheckupDate",
+						"type": "String"
+					},
+					{
+						"name": "HeartRate",
+						"type": "String"
+					},
+					{
+						"name": "BloodPressure",
+						"type": "String"
+					},
+					{
+						"name": "BloodSugar",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataset_snowflake_patientdata_tgt')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Snowflake1",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SnowflakeV2Table",
+				"schema": [
+					{
+						"name": "PATIENT_ID",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "DEPARTMENT",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "CHECKUPDATE",
+						"type": "DATE",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "HEARTRATE",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "BLOODPRESSURE",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "BLOODSUGAR",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "BP_STATUS",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "SUGAR_STATUS",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "MOUNIKAADF",
+					"table": "PATIENT_RECORDS"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Snowflake1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Blob_for_snowflake_withSASURL')]",
@@ -45,6 +498,131 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Snowflake1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SnowflakeV2",
+				"typeProperties": {
+					"authenticationType": "Basic",
+					"accountIdentifier": "mybqkyv-ov86605",
+					"user": "mounika",
+					"database": "[parameters('Snowflake1_properties_typeProperties_database')]",
+					"warehouse": "COMPUTE_WH",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('Snowflake1_password')]"
+					}
+				},
+				"version": "1.1"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_blob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('ls_blob_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Patient_source_csv_Staging",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "dataset_snowflake_patientdata_tgt",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						},
+						{
+							"name": "filter1"
+						},
+						{
+							"name": "derivedColumn2"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          PatientID as string,",
+						"          Department as string,",
+						"          CheckupDate as date 'MM/dd/yyyy',",
+						"          HeartRate as short,",
+						"          BloodPressure as short,",
+						"          BloodSugar as short",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> source1",
+						"source1 derive(BP_Status = iif(toInteger(BloodPressure)>140,'HIGH',iif(toInteger(BloodPressure)<90,'LOW','NORMAL')),",
+						"          Sugar_Status = iif(toInteger(BloodSugar)>140,'HIGH','NORMAL')) ~> derivedColumn1",
+						"derivedColumn1 filter(!isNull(PatientID)) ~> filter1",
+						"filter1 derive(Dateconvert = toString(CheckupDate,'dd-MM-yy')) ~> derivedColumn2",
+						"derivedColumn2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          PATIENT_ID as string,",
+						"          DEPARTMENT as string,",
+						"          CHECKUPDATE as date,",
+						"          HEARTRATE as decimal(38,0),",
+						"          BLOODPRESSURE as decimal(38,0),",
+						"          BLOODSUGAR as decimal(38,0),",
+						"          BP_STATUS as string,",
+						"          SUGAR_STATUS as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     stageInsert: true,",
+						"     mapColumn(",
+						"          PATIENT_ID = PatientID,",
+						"          DEPARTMENT = Department,",
+						"          CHECKUPDATE = Dateconvert,",
+						"          HEARTRATE = HeartRate,",
+						"          BLOODPRESSURE = BloodPressure,",
+						"          BLOODSUGAR = BloodSugar,",
+						"          BP_STATUS = BP_Status,",
+						"          SUGAR_STATUS = Sugar_Status",
+						"     )) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Patient_source_csv_Staging')]",
+				"[concat(variables('factoryId'), '/datasets/dataset_snowflake_patientdata_tgt')]"
+			]
 		}
 	]
 }
