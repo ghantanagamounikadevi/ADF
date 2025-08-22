@@ -27,15 +27,9 @@
 						}
 					},
 					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings",
-							"copyBehavior": "FlattenHierarchy"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
+						"type": "SnowflakeV2Sink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
 						}
 					},
 					"enableStaging": false,
@@ -45,103 +39,81 @@
 							{
 								"source": {
 									"name": "PatientID",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
-									"name": "PatientID",
-									"type": "String",
-									"physicalType": "String"
+									"name": "PATIENT_ID",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "Department",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
-									"name": "Department",
-									"type": "String",
-									"physicalType": "String"
+									"name": "DEPARTMENT",
+									"type": "String"
 								}
 							},
 							{
 								"source": {
 									"name": "CheckupDate",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
-									"name": "CheckupDate",
-									"type": "String",
-									"physicalType": "String"
+									"name": "CHECKUPDATE",
+									"type": "DateTime"
 								}
 							},
 							{
 								"source": {
 									"name": "HeartRate",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
-									"name": "HeartRate",
-									"type": "String",
-									"physicalType": "String"
+									"name": "HEARTRATE",
+									"type": "Int64"
 								}
 							},
 							{
 								"source": {
 									"name": "BloodPressure",
-									"type": "String",
-									"physicalType": "String"
+									"type": "String"
 								},
 								"sink": {
-									"name": "BloodPressure",
-									"type": "String",
-									"physicalType": "String"
+									"name": "BLOODPRESSURE",
+									"type": "Int64"
 								}
 							},
 							{
 								"source": {
-									"name": "BloodSugar",
-									"type": "String",
-									"physicalType": "String"
+									"name": "BloodSugar\r",
+									"type": "String"
 								},
 								"sink": {
-									"name": "BloodSugar",
-									"type": "String",
-									"physicalType": "String"
+									"name": "BLOODSUGAR",
+									"type": "Int64"
 								}
 							}
-						],
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
+						]
 					}
 				},
 				"inputs": [
 					{
-						"referenceName": "Patient_source_csv_Staging",
+						"referenceName": "Blob_source_BySASURI_link_Forsnowflake",
 						"type": "DatasetReference",
 						"parameters": {
-							"p_container": "sales",
-							"p_folder": "patient",
-							"p_file": "Client_data.csv"
+							"param_container": "sales",
+							"param_folder": "patient",
+							"param_file": "Client_data.csv"
 						}
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "Patient_source_csv_Staging",
-						"type": "DatasetReference",
-						"parameters": {
-							"p_container": "destination",
-							"p_folder": "staging",
-							"p_file": "Client_data.csv"
-						}
+						"referenceName": "Dataset_snowflake_backuptable",
+						"type": "DatasetReference"
 					}
 				]
 			},

@@ -2,7 +2,7 @@
 	"name": "Blob_source_BySASURI_link_Forsnowflake",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_blob",
+			"referenceName": "Blob_for_snowflake_withSASURL",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
@@ -38,8 +38,9 @@
 				}
 			},
 			"columnDelimiter": ",",
+			"rowDelimiter": "\n",
 			"escapeChar": "\\",
-			"firstRowAsHeader": true,
+			"firstRowAsHeader": false,
 			"quoteChar": "\""
 		},
 		"schema": [
