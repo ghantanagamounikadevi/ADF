@@ -61,9 +61,25 @@
 							"typeProperties": {
 								"dataset": {
 									"referenceName": "Blob_all_parameters",
-									"type": "DatasetReference"
+									"type": "DatasetReference",
+									"parameters": {
+										"pa_container": {
+											"value": "@item().SRC_CONTAINER_NAME",
+											"type": "Expression"
+										},
+										"pa_folder": {
+											"value": "@item().SRC_FOLDER_NAME",
+											"type": "Expression"
+										},
+										"pa_filename": {
+											"value": "@item().SRC_FILENAME",
+											"type": "Expression"
+										}
+									}
 								},
-								"fieldList": [],
+								"fieldList": [
+									"exists"
+								],
 								"storeSettings": {
 									"type": "AzureBlobStorageReadSettings",
 									"enablePartitionDiscovery": false
@@ -71,6 +87,103 @@
 								"formatSettings": {
 									"type": "DelimitedTextReadSettings"
 								}
+							}
+						},
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "Get Metadata1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@activity('Get Metadata1').output.exists",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Copy data1",
+										"type": "Copy",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"source": {
+												"type": "DelimitedTextSource",
+												"storeSettings": {
+													"type": "AzureBlobStorageReadSettings",
+													"recursive": true,
+													"enablePartitionDiscovery": false
+												},
+												"formatSettings": {
+													"type": "DelimitedTextReadSettings"
+												}
+											},
+											"sink": {
+												"type": "SnowflakeV2Sink",
+												"importSettings": {
+													"type": "SnowflakeImportCopyCommand"
+												}
+											},
+											"enableStaging": true,
+											"stagingSettings": {
+												"linkedServiceName": {
+													"referenceName": "Blob_for_snowflake_withSASURL",
+													"type": "LinkedServiceReference"
+												},
+												"path": "vendors/backup/"
+											}
+										},
+										"inputs": [
+											{
+												"referenceName": "Blob_all_parameters",
+												"type": "DatasetReference",
+												"parameters": {
+													"pa_container": {
+														"value": "@item().SRC_CONTAINER_NAME",
+														"type": "Expression"
+													},
+													"pa_folder": {
+														"value": "@item().SRC_FOLDER_NAME",
+														"type": "Expression"
+													},
+													"pa_filename": {
+														"value": "@item().SRC_FILENAME",
+														"type": "Expression"
+													}
+												}
+											}
+										],
+										"outputs": [
+											{
+												"referenceName": "snowflake_allparameter_tgt",
+												"type": "DatasetReference",
+												"parameters": {
+													"pa_schema": {
+														"value": "@item().TGT_SCHEMA_NAME",
+														"type": "Expression"
+													},
+													"pa_targettabel": {
+														"value": "@item().TGT_TABLENAME",
+														"type": "Expression"
+													}
+												}
+											}
+										]
+									}
+								]
 							}
 						}
 					]

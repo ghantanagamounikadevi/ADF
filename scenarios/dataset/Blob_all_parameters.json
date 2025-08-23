@@ -39,6 +39,19 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": []
+		"schema": [
+			{
+				"name": "TRANSACTION_ID",
+				"type": "String"
+			},
+			{
+				"name": "PRODUCT",
+				"type": "String"
+			},
+			{
+				"name": "TRANSACTION_DATE",
+				"type": "String"
+			}
+		]
 	}
 }
