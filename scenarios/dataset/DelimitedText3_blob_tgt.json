@@ -1,0 +1,57 @@
+{
+	"name": "DelimitedText3_blob_tgt",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"param_filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().param_filename",
+					"type": "Expression"
+				},
+				"folderPath": "staging",
+				"container": "destination"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "PatientID",
+				"type": "String"
+			},
+			{
+				"name": "Department",
+				"type": "String"
+			},
+			{
+				"name": "CheckupDate",
+				"type": "String"
+			},
+			{
+				"name": "HeartRate",
+				"type": "String"
+			},
+			{
+				"name": "BloodPressure",
+				"type": "String"
+			},
+			{
+				"name": "BloodSugar",
+				"type": "String"
+			}
+		]
+	}
+}
