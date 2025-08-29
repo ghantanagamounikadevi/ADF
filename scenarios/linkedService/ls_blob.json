@@ -4,8 +4,8 @@
 		"annotations": [],
 		"type": "AzureBlobStorage",
 		"typeProperties": {
-			"containerUri": "https://mounikapracticestorage.blob.core.windows.net/sales",
-			"authenticationType": "Anonymous"
+			"serviceEndpoint": "https://mounikapracticestorage.blob.core.windows.net/",
+			"accountKind": "StorageV2"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/linkedservices"
