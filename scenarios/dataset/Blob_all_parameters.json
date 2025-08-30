@@ -1,0 +1,57 @@
+{
+	"name": "Blob_all_parameters",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_blob",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"pa_container": {
+				"type": "string"
+			},
+			"pa_folder": {
+				"type": "string"
+			},
+			"pa_filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().pa_filename",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().pa_folder",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().pa_container",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "TRANSACTION_ID",
+				"type": "String"
+			},
+			{
+				"name": "PRODUCT",
+				"type": "String"
+			},
+			{
+				"name": "TRANSACTION_DATE",
+				"type": "String"
+			}
+		]
+	}
+}

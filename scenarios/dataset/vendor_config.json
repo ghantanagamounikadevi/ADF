@@ -1,0 +1,37 @@
+{
+	"name": "vendor_config",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "SRC_CONTAINER_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "SRC_FOLDER_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "SRC_FILENAME",
+				"type": "varchar"
+			},
+			{
+				"name": "TGT_SCHEMA_NAME",
+				"type": "varchar"
+			},
+			{
+				"name": "TGT_TABLENAME",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "VENDORS_CONFIG"
+		}
+	}
+}
