@@ -62,7 +62,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"on": {
-									"value": "@substring(item().name,0 ,indexOf(item().name,'_'))\r\n",
+									"value": "@substring(item().name,0 ,indexOf(item().name,'_'))",
 									"type": "Expression"
 								},
 								"cases": [
@@ -116,7 +116,7 @@
 															"pa_container": "sales",
 															"pa_folder": "sales",
 															"pa_filename": {
-																"value": "@activity('Get Metadata1').output.name",
+																"value": "@item().name",
 																"type": "Expression"
 															}
 														}
@@ -184,7 +184,7 @@
 															"pa_container": "sales",
 															"pa_folder": "sales",
 															"pa_filename": {
-																"value": "@activity('Get Metadata1').output.name",
+																"value": "@item().name",
 																"type": "Expression"
 															}
 														}
@@ -252,7 +252,7 @@
 															"pa_container": "sales",
 															"pa_folder": "sales",
 															"pa_filename": {
-																"value": "@activity('Get Metadata1').output.name",
+																"value": "@item().name",
 																"type": "Expression"
 															}
 														}
