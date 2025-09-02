@@ -137,17 +137,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "dataflow1",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"source1": {
-								"p_container": "sales",
-								"p_folder": "patient",
-								"p_file": "Client_data.csv"
-							}
-						}
-					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"

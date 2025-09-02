@@ -1,0 +1,16 @@
+{
+	"name": "snowflake_SCD_Stgtable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Snowflake_SCDTYPE",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "LAB_SCHEMA",
+			"table": "STG_SALES"
+		}
+	}
+}

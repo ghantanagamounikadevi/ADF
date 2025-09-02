@@ -1,5 +1,5 @@
 {
-	"name": "directblob",
+	"name": "Blob_SCD",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_blob",
@@ -10,9 +10,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "dbo.emp.csv",
-				"folderPath": "Emp",
-				"container": "sales"
+				"container": "raw"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
@@ -21,27 +19,19 @@
 		},
 		"schema": [
 			{
-				"name": "PRODUCT",
+				"name": "customer_id",
 				"type": "String"
 			},
 			{
-				"name": "CATEGORY",
+				"name": "product_id",
 				"type": "String"
 			},
 			{
-				"name": "QUANTITY",
+				"name": "invoice_date",
 				"type": "String"
 			},
 			{
-				"name": "PRICE",
-				"type": "String"
-			},
-			{
-				"name": "STATUS",
-				"type": "String"
-			},
-			{
-				"name": "TRANSACTION_DATE",
+				"name": "total_sales",
 				"type": "String"
 			}
 		]

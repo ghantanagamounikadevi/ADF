@@ -1,0 +1,30 @@
+{
+	"name": "ds_API",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_API_HTTTP",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"param_filename_Api": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "HttpServerLocation",
+				"relativeUrl": {
+					"value": "ghantanagamounikadevi/ADF/refs/heads/main/@{dataset().param_filename_Api}",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
