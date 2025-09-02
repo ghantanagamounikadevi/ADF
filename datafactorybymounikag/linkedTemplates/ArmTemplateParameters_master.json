@@ -11,8 +11,14 @@
 		"Snowflake1_password": {
 			"value": ""
 		},
-		"ls_blob_connectionString": {
+		"Snowflake_SCDTYPE_password": {
 			"value": ""
+		},
+		"ls_ADLS_accountKey": {
+			"value": ""
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://mounikakeyvaulttotesting.vault.azure.net/"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_server": {
 			"value": "sqlservermounika.database.windows.net"
@@ -26,8 +32,20 @@
 		"Blob_for_snowflake_withSASURL_sasUri": {
 			"value": ""
 		},
+		"LS_API_HTTTP_properties_typeProperties_url": {
+			"value": "https://raw.githubusercontent.com/"
+		},
 		"Snowflake1_properties_typeProperties_database": {
 			"value": "SNOWFLAKE_LEARNING_DB"
+		},
+		"Snowflake_SCDTYPE_properties_typeProperties_database": {
+			"value": "LAB_DB"
+		},
+		"ls_ADLS_properties_typeProperties_url": {
+			"value": "https://mounikaadls.dfs.core.windows.net/"
+		},
+		"ls_blob_sasUri": {
+			"value": ""
 		},
 		"containerUri": {
 			"value": ""

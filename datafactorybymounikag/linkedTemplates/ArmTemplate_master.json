@@ -15,9 +15,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'Snowflake1'"
 		},
-		"ls_blob_connectionString": {
+		"Snowflake_SCDTYPE_password": {
 			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'ls_blob'"
+			"metadata": "Secure string for 'password' of 'Snowflake_SCDTYPE'"
+		},
+		"ls_ADLS_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'ls_ADLS'"
+		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://mounikakeyvaulttotesting.vault.azure.net/"
 		},
 		"AzureSqlDatabase1_properties_typeProperties_server": {
 			"type": "string",
@@ -35,9 +43,25 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'Blob_for_snowflake_withSASURL'"
 		},
+		"LS_API_HTTTP_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://raw.githubusercontent.com/"
+		},
 		"Snowflake1_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "SNOWFLAKE_LEARNING_DB"
+		},
+		"Snowflake_SCDTYPE_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "LAB_DB"
+		},
+		"ls_ADLS_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://mounikaadls.dfs.core.windows.net/"
+		},
+		"ls_blob_sasUri": {
+			"type": "secureString",
+			"metadata": "Secure string for 'sasUri' of 'ls_blob'"
 		},
 		"containerUri": {
 			"type": "string",
@@ -72,8 +96,14 @@
 					"Snowflake1_password": {
 						"value": "[parameters('Snowflake1_password')]"
 					},
-					"ls_blob_connectionString": {
-						"value": "[parameters('ls_blob_connectionString')]"
+					"Snowflake_SCDTYPE_password": {
+						"value": "[parameters('Snowflake_SCDTYPE_password')]"
+					},
+					"ls_ADLS_accountKey": {
+						"value": "[parameters('ls_ADLS_accountKey')]"
+					},
+					"AzureKeyVault1_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
 					},
 					"AzureSqlDatabase1_properties_typeProperties_server": {
 						"value": "[parameters('AzureSqlDatabase1_properties_typeProperties_server')]"
@@ -87,12 +117,64 @@
 					"Blob_for_snowflake_withSASURL_sasUri": {
 						"value": "[parameters('Blob_for_snowflake_withSASURL_sasUri')]"
 					},
+					"LS_API_HTTTP_properties_typeProperties_url": {
+						"value": "[parameters('LS_API_HTTTP_properties_typeProperties_url')]"
+					},
 					"Snowflake1_properties_typeProperties_database": {
 						"value": "[parameters('Snowflake1_properties_typeProperties_database')]"
+					},
+					"Snowflake_SCDTYPE_properties_typeProperties_database": {
+						"value": "[parameters('Snowflake_SCDTYPE_properties_typeProperties_database')]"
+					},
+					"ls_ADLS_properties_typeProperties_url": {
+						"value": "[parameters('ls_ADLS_properties_typeProperties_url')]"
+					},
+					"ls_blob_sasUri": {
+						"value": "[parameters('ls_blob_sasUri')]"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "datafactorybymounikag_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'datafactorybymounikag_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "datafactorybymounikag_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'datafactorybymounikag_ArmTemplate_1')]"
+			]
 		}
 	]
 }
