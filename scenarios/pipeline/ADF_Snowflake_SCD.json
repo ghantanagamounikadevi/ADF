@@ -36,7 +36,7 @@
 					"enableStaging": true,
 					"stagingSettings": {
 						"linkedServiceName": {
-							"referenceName": "ls_blob",
+							"referenceName": "Blob_for_snowflake_withSASURL",
 							"type": "LinkedServiceReference"
 						},
 						"path": "sales/snowflakestaging/"
