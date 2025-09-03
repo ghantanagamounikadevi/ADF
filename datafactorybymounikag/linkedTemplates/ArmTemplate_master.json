@@ -47,6 +47,10 @@
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/"
 		},
+		"RestService1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
 		"Snowflake1_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "SNOWFLAKE_LEARNING_DB"
@@ -119,6 +123,9 @@
 					},
 					"LS_API_HTTTP_properties_typeProperties_url": {
 						"value": "[parameters('LS_API_HTTTP_properties_typeProperties_url')]"
+					},
+					"RestService1_properties_typeProperties_url": {
+						"value": "[parameters('RestService1_properties_typeProperties_url')]"
 					},
 					"Snowflake1_properties_typeProperties_database": {
 						"value": "[parameters('Snowflake1_properties_typeProperties_database')]"

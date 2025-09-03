@@ -35,6 +35,9 @@
 		"LS_API_HTTTP_properties_typeProperties_url": {
 			"value": "https://raw.githubusercontent.com/"
 		},
+		"RestService1_properties_typeProperties_url": {
+			"value": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
 		"Snowflake1_properties_typeProperties_database": {
 			"value": "SNOWFLAKE_LEARNING_DB"
 		},
