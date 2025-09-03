@@ -2,7 +2,7 @@
 	"name": "Blob_SCD",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_blob",
+			"referenceName": "Blob_for_snowflake_withSASURL",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
