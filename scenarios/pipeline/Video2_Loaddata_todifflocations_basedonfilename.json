@@ -20,7 +20,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"pa_container": "sales",
-							"pa_folder": "sales"
+							"pa_folder": "sales",
+							"pa_filename": "*"
 						}
 					},
 					"fieldList": [
