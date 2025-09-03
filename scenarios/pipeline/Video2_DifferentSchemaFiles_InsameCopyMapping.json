@@ -1,0 +1,260 @@
+{
+	"name": "Video2_DifferentSchemaFiles_InsameCopyMapping",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "Blob_folder_parameter",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_container": "sales",
+							"p_folder": "contracts"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"value": "@if(contains(item().name,'Contracts'),pipeline().parameters.param_mapping1,pipeline().parameters.param_map2)",
+									"type": "Expression"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "Blob_all_parameters",
+									"type": "DatasetReference",
+									"parameters": {
+										"pa_container": "sales",
+										"pa_folder": "contracts",
+										"pa_filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Blob_all_parameters",
+									"type": "DatasetReference",
+									"parameters": {
+										"pa_container": "destination",
+										"pa_folder": "dynamicdestination",
+										"pa_filename": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"param_mapping1": {
+				"type": "object",
+				"defaultValue": {
+					"type": "TabularTranslator",
+					"mappings": [
+						{
+							"source": {
+								"name": "CONTRACT_NUMBER",
+								"type": "String",
+								"physicalType": "String"
+							},
+							"sink": {
+								"name": "CONTRACT_NUMBER",
+								"type": "String",
+								"physicalType": "String"
+							}
+						},
+						{
+							"source": {
+								"name": "CONTRACT_TYPE",
+								"type": "String",
+								"physicalType": "String"
+							},
+							"sink": {
+								"name": "CONTRACT_TYPE",
+								"type": "String",
+								"physicalType": "String"
+							}
+						},
+						{
+							"source": {
+								"name": "PRODUCT_NAME",
+								"type": "String",
+								"physicalType": "String"
+							},
+							"sink": {
+								"name": "PRODUCT_NAME",
+								"type": "String",
+								"physicalType": "String"
+							}
+						},
+						{
+							"source": {
+								"name": "PRODUCT_ID",
+								"type": "String",
+								"physicalType": "String"
+							},
+							"sink": {
+								"name": "PRODUCT_ID",
+								"type": "String",
+								"physicalType": "String"
+							}
+						}
+					],
+					"typeConversion": true,
+					"typeConversionSettings": {
+						"allowDataTruncation": true,
+						"treatBooleanAsNumber": false
+					}
+				}
+			},
+			"param_map2": {
+				"type": "object",
+				"defaultValue": {
+					"type": "TabularTranslator",
+					"mappings": [
+						{
+							"source": {
+								"name": "CONTRACT_NUMBER",
+								"type": "String",
+								"physicalType": "String"
+							},
+							"sink": {
+								"name": "CONTRACT_NUMBER",
+								"type": "String",
+								"physicalType": "String"
+							}
+						},
+						{
+							"source": {
+								"name": "CONTRACT_TYPE",
+								"type": "String",
+								"physicalType": "String"
+							},
+							"sink": {
+								"name": "CONTRACT_TYPE",
+								"type": "String",
+								"physicalType": "String"
+							}
+						},
+						{
+							"source": {
+								"name": "PRODUCT_NAME",
+								"type": "String",
+								"physicalType": "String"
+							},
+							"sink": {
+								"name": "PRODUCT_NAME",
+								"type": "String",
+								"physicalType": "String"
+							}
+						},
+						{
+							"source": {
+								"name": "PRODUCT_ID",
+								"type": "String",
+								"physicalType": "String"
+							},
+							"sink": {
+								"name": "PRODUCT_ID",
+								"type": "String",
+								"physicalType": "String"
+							}
+						}
+					],
+					"typeConversion": true,
+					"typeConversionSettings": {
+						"allowDataTruncation": true,
+						"treatBooleanAsNumber": false
+					}
+				}
+			}
+		},
+		"folder": {
+			"name": "Scenario-based Questions"
+		},
+		"annotations": []
+	}
+}
