@@ -5,12 +5,20 @@
 			"referenceName": "Blob_for_snowflake_withSASURL",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"pa_container": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"container": "raw"
+				"container": {
+					"value": "@dataset().pa_container",
+					"type": "Expression"
+				}
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",

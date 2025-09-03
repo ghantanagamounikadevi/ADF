@@ -45,7 +45,10 @@
 				"inputs": [
 					{
 						"referenceName": "Blob_SCD",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"pa_container": "raw"
+						}
 					}
 				],
 				"outputs": [
