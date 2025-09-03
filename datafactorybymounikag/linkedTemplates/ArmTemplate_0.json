@@ -63,9 +63,9 @@
 			"type": "string",
 			"defaultValue": "https://mounikaadls.dfs.core.windows.net/"
 		},
-		"ls_blob_sasUri": {
-			"type": "secureString",
-			"metadata": "Secure string for 'sasUri' of 'ls_blob'"
+		"ls_blob_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://mounikapracticestorage.blob.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -256,7 +256,8 @@
 				"annotations": [],
 				"type": "AzureBlobStorage",
 				"typeProperties": {
-					"sasUri": "[parameters('ls_blob_sasUri')]"
+					"serviceEndpoint": "[parameters('ls_blob_properties_typeProperties_serviceEndpoint')]",
+					"accountKind": "StorageV2"
 				}
 			},
 			"dependsOn": []
@@ -307,15 +308,23 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "ls_blob",
+					"referenceName": "Blob_for_snowflake_withSASURL",
 					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pa_container": {
+						"type": "string"
+					}
 				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"container": "raw"
+						"container": {
+							"value": "@dataset().pa_container",
+							"type": "Expression"
+						}
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -342,7 +351,7 @@
 				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
 			]
 		},
 		{
@@ -402,6 +411,48 @@
 						"type": "String"
 					}
 				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Blob_folder_parameter')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_container": {
+						"type": "string"
+					},
+					"p_folder": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().p_folder",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().p_container",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
@@ -669,68 +720,6 @@
 					},
 					{
 						"name": "BloodSugar",
-						"type": "String"
-					}
-				]
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DelimitedText3_directblob')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_blob",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"p_file": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().p_file",
-							"type": "Expression"
-						},
-						"folderPath": "sales",
-						"container": "sales"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "PRODUCT",
-						"type": "String"
-					},
-					{
-						"name": "CATEGORY",
-						"type": "String"
-					},
-					{
-						"name": "QUANTITY",
-						"type": "String"
-					},
-					{
-						"name": "PRICE",
-						"type": "String"
-					},
-					{
-						"name": "STATUS",
-						"type": "String"
-					},
-					{
-						"name": "TRANSACTION_DATE",
 						"type": "String"
 					}
 				]

@@ -63,9 +63,9 @@
 			"type": "string",
 			"defaultValue": "https://mounikaadls.dfs.core.windows.net/"
 		},
-		"ls_blob_sasUri": {
-			"type": "secureString",
-			"metadata": "Secure string for 'sasUri' of 'ls_blob'"
+		"ls_blob_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://mounikapracticestorage.blob.core.windows.net/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -136,8 +136,8 @@
 					"ls_ADLS_properties_typeProperties_url": {
 						"value": "[parameters('ls_ADLS_properties_typeProperties_url')]"
 					},
-					"ls_blob_sasUri": {
-						"value": "[parameters('ls_blob_sasUri')]"
+					"ls_blob_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('ls_blob_properties_typeProperties_serviceEndpoint')]"
 					}
 				}
 			},

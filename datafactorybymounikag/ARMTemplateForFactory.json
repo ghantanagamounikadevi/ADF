@@ -63,9 +63,9 @@
 			"type": "string",
 			"defaultValue": "https://mounikaadls.dfs.core.windows.net/"
 		},
-		"ls_blob_sasUri": {
-			"type": "secureString",
-			"metadata": "Secure string for 'sasUri' of 'ls_blob'"
+		"ls_blob_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://mounikapracticestorage.blob.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -112,7 +112,7 @@
 							"enableStaging": true,
 							"stagingSettings": {
 								"linkedServiceName": {
-									"referenceName": "ls_blob",
+									"referenceName": "Blob_for_snowflake_withSASURL",
 									"type": "LinkedServiceReference"
 								},
 								"path": "sales/snowflakestaging/"
@@ -122,7 +122,9 @@
 							{
 								"referenceName": "Blob_SCD",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"pa_container": "raw"
+								}
 							}
 						],
 						"outputs": [
@@ -145,7 +147,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Blob_SCD')]",
 				"[concat(variables('factoryId'), '/datasets/snowflake_SCD_Stgtable')]",
-				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
 			]
 		},
 		{
@@ -1136,6 +1138,276 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Video2_DifferentSchemaFiles_InsameCopyMapping')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "Blob_folder_parameter",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_container": "sales",
+									"p_folder": "contracts"
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata1').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"value": "@if(contains(item().name,'Contracts'),pipeline().parameters.param_mapping1,pipeline().parameters.param_map2)",
+											"type": "Expression"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "Blob_all_parameters",
+											"type": "DatasetReference",
+											"parameters": {
+												"pa_container": "sales",
+												"pa_folder": "contracts",
+												"pa_filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Blob_all_parameters",
+											"type": "DatasetReference",
+											"parameters": {
+												"pa_container": "destination",
+												"pa_folder": "dynamicdestination",
+												"pa_filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"param_mapping1": {
+						"type": "object",
+						"defaultValue": {
+							"type": "TabularTranslator",
+							"mappings": [
+								{
+									"source": {
+										"name": "CONTRACT_NUMBER",
+										"type": "String",
+										"physicalType": "String"
+									},
+									"sink": {
+										"name": "CONTRACT_NUMBER",
+										"type": "String",
+										"physicalType": "String"
+									}
+								},
+								{
+									"source": {
+										"name": "CONTRACT_TYPE",
+										"type": "String",
+										"physicalType": "String"
+									},
+									"sink": {
+										"name": "CONTRACT_TYPE",
+										"type": "String",
+										"physicalType": "String"
+									}
+								},
+								{
+									"source": {
+										"name": "PRODUCT_NAME",
+										"type": "String",
+										"physicalType": "String"
+									},
+									"sink": {
+										"name": "PRODUCT_NAME",
+										"type": "String",
+										"physicalType": "String"
+									}
+								},
+								{
+									"source": {
+										"name": "PRODUCT_ID",
+										"type": "String",
+										"physicalType": "String"
+									},
+									"sink": {
+										"name": "PRODUCT_ID",
+										"type": "String",
+										"physicalType": "String"
+									}
+								}
+							],
+							"typeConversion": true,
+							"typeConversionSettings": {
+								"allowDataTruncation": true,
+								"treatBooleanAsNumber": false
+							}
+						}
+					},
+					"param_map2": {
+						"type": "object",
+						"defaultValue": {
+							"type": "TabularTranslator",
+							"mappings": [
+								{
+									"source": {
+										"name": "CONTRACT_NUMBER",
+										"type": "String",
+										"physicalType": "String"
+									},
+									"sink": {
+										"name": "CONTRACT_NUMBER",
+										"type": "String",
+										"physicalType": "String"
+									}
+								},
+								{
+									"source": {
+										"name": "CONTRACT_TYPE",
+										"type": "String",
+										"physicalType": "String"
+									},
+									"sink": {
+										"name": "CONTRACT_TYPE",
+										"type": "String",
+										"physicalType": "String"
+									}
+								},
+								{
+									"source": {
+										"name": "PRODUCT_NAME",
+										"type": "String",
+										"physicalType": "String"
+									},
+									"sink": {
+										"name": "PRODUCT_NAME",
+										"type": "String",
+										"physicalType": "String"
+									}
+								},
+								{
+									"source": {
+										"name": "PRODUCT_ID",
+										"type": "String",
+										"physicalType": "String"
+									},
+									"sink": {
+										"name": "PRODUCT_ID",
+										"type": "String",
+										"physicalType": "String"
+									}
+								}
+							],
+							"typeConversion": true,
+							"typeConversionSettings": {
+								"allowDataTruncation": true,
+								"treatBooleanAsNumber": false
+							}
+						}
+					}
+				},
+				"folder": {
+					"name": "Scenario-based Questions"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Blob_folder_parameter')]",
+				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Video2_Loaddata_todifflocations_basedonfilename')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1927,6 +2199,277 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Video2_loadfiles_Not_in_Target')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata_source",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "Blob_folder_parameter",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_container": "sales",
+									"p_folder": "sales"
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Get Metadata_sink",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "Blob_folder_parameter",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_container": "sales",
+									"p_folder": "patient"
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Filter1",
+						"type": "Filter",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata_source').output.childItems",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@contains(activity('Get Metadata_sink').output.childItems,activity('Get Metadata_source').output.childItems)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata_sink",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata_sink').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Append variable1",
+									"type": "AppendVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "files_sink",
+										"value": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "ForEach2",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "ForEach1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Get Metadata_source",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata_source').output.childItems",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "If Condition1",
+									"type": "IfCondition",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@contains(variables('files_sink'),item().name)",
+											"type": "Expression"
+										},
+										"ifFalseActivities": [
+											{
+												"name": "Copy data1",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "DelimitedTextSource",
+														"storeSettings": {
+															"type": "AzureBlobStorageReadSettings",
+															"recursive": true,
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "DelimitedTextReadSettings"
+														}
+													},
+													"sink": {
+														"type": "DelimitedTextSink",
+														"storeSettings": {
+															"type": "AzureBlobStorageWriteSettings"
+														},
+														"formatSettings": {
+															"type": "DelimitedTextWriteSettings",
+															"quoteAllText": true,
+															"fileExtension": ".txt"
+														}
+													},
+													"enableStaging": false,
+													"translator": {
+														"type": "TabularTranslator",
+														"typeConversion": true,
+														"typeConversionSettings": {
+															"allowDataTruncation": true,
+															"treatBooleanAsNumber": false
+														}
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "Blob_all_parameters",
+														"type": "DatasetReference",
+														"parameters": {
+															"pa_container": "sales",
+															"pa_folder": "sales",
+															"pa_filename": {
+																"value": "@item().name",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "Blob_all_parameters",
+														"type": "DatasetReference",
+														"parameters": {
+															"pa_container": "sales",
+															"pa_folder": "patient",
+															"pa_filename": {
+																"value": "@item().name",
+																"type": "Expression"
+															}
+														}
+													}
+												]
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"files_source": {
+						"type": "Array"
+					},
+					"files_sink": {
+						"type": "Array"
+					},
+					"list_of_files": {
+						"type": "Array"
+					},
+					"files_count": {
+						"type": "Integer"
+					}
+				},
+				"folder": {
+					"name": "Scenario-based Questions"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Blob_folder_parameter')]",
+				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Video_1_Scenario2_table_to_json')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2206,15 +2749,23 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "ls_blob",
+					"referenceName": "Blob_for_snowflake_withSASURL",
 					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pa_container": {
+						"type": "string"
+					}
 				},
 				"annotations": [],
 				"type": "DelimitedText",
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"container": "raw"
+						"container": {
+							"value": "@dataset().pa_container",
+							"type": "Expression"
+						}
 					},
 					"columnDelimiter": ",",
 					"escapeChar": "\\",
@@ -2241,7 +2792,7 @@
 				]
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
 			]
 		},
 		{
@@ -2301,6 +2852,48 @@
 						"type": "String"
 					}
 				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Blob_folder_parameter')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_container": {
+						"type": "string"
+					},
+					"p_folder": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": {
+							"value": "@dataset().p_folder",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().p_container",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
@@ -3355,7 +3948,8 @@
 				"annotations": [],
 				"type": "AzureBlobStorage",
 				"typeProperties": {
-					"sasUri": "[parameters('ls_blob_sasUri')]"
+					"serviceEndpoint": "[parameters('ls_blob_properties_typeProperties_serviceEndpoint')]",
+					"accountKind": "StorageV2"
 				}
 			},
 			"dependsOn": []
@@ -3399,321 +3993,6 @@
 				"typeProperties": {}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Video2_loadfiles_Not_in_Target')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get Metadata_source",
-						"type": "GetMetadata",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "Blob_folder_parameter",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_container": "sales",
-									"p_folder": "sales"
-								}
-							},
-							"fieldList": [
-								"childItems"
-							],
-							"storeSettings": {
-								"type": "AzureBlobStorageReadSettings",
-								"enablePartitionDiscovery": false
-							},
-							"formatSettings": {
-								"type": "DelimitedTextReadSettings"
-							}
-						}
-					},
-					{
-						"name": "Get Metadata_sink",
-						"type": "GetMetadata",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "Blob_folder_parameter",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_container": "sales",
-									"p_folder": "patient"
-								}
-							},
-							"fieldList": [
-								"childItems"
-							],
-							"storeSettings": {
-								"type": "AzureBlobStorageReadSettings",
-								"enablePartitionDiscovery": false
-							},
-							"formatSettings": {
-								"type": "DelimitedTextReadSettings"
-							}
-						}
-					},
-					{
-						"name": "Filter1",
-						"type": "Filter",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Get Metadata_source').output.childItems",
-								"type": "Expression"
-							},
-							"condition": {
-								"value": "@contains(activity('Get Metadata_sink').output.childItems,activity('Get Metadata_source').output.childItems)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "ForEach1",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Get Metadata_source",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							},
-							{
-								"activity": "Get Metadata_sink",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Get Metadata_source').output.childItems",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "Append variable1_source",
-									"type": "AppendVariable",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "files_source",
-										"value": {
-											"value": "@item().name",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Append variable_sink",
-									"type": "AppendVariable",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "files_sink",
-										"value": {
-											"value": "@item().name",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "If Condition1",
-									"type": "IfCondition",
-									"dependsOn": [
-										{
-											"activity": "Append variable1_source",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										},
-										{
-											"activity": "Append variable_sink",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"expression": {
-											"value": "@contains(variables('files_source'),variables('files_sink'))",
-											"type": "Expression"
-										},
-										"ifFalseActivities": [
-											{
-												"name": "Copy data1",
-												"type": "Copy",
-												"dependsOn": [],
-												"policy": {
-													"timeout": "0.12:00:00",
-													"retry": 0,
-													"retryIntervalInSeconds": 30,
-													"secureOutput": false,
-													"secureInput": false
-												},
-												"userProperties": [],
-												"typeProperties": {
-													"source": {
-														"type": "DelimitedTextSource",
-														"storeSettings": {
-															"type": "AzureBlobStorageReadSettings",
-															"recursive": true,
-															"enablePartitionDiscovery": false
-														},
-														"formatSettings": {
-															"type": "DelimitedTextReadSettings"
-														}
-													},
-													"sink": {
-														"type": "DelimitedTextSink",
-														"storeSettings": {
-															"type": "AzureBlobStorageWriteSettings"
-														},
-														"formatSettings": {
-															"type": "DelimitedTextWriteSettings",
-															"quoteAllText": true,
-															"fileExtension": ".txt"
-														}
-													},
-													"enableStaging": false,
-													"translator": {
-														"type": "TabularTranslator",
-														"typeConversion": true,
-														"typeConversionSettings": {
-															"allowDataTruncation": true,
-															"treatBooleanAsNumber": false
-														}
-													}
-												},
-												"inputs": [
-													{
-														"referenceName": "Blob_all_parameters",
-														"type": "DatasetReference",
-														"parameters": {
-															"pa_container": "sales",
-															"pa_folder": "sales",
-															"pa_filename": {
-																"value": "@item().name",
-																"type": "Expression"
-															}
-														}
-													}
-												],
-												"outputs": [
-													{
-														"referenceName": "Blob_all_parameters",
-														"type": "DatasetReference",
-														"parameters": {
-															"pa_container": "sales",
-															"pa_folder": "patient",
-															"pa_filename": {
-																"value": "@item().name",
-																"type": "Expression"
-															}
-														}
-													}
-												]
-											}
-										]
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"files_source": {
-						"type": "Array"
-					},
-					"files_sink": {
-						"type": "Array"
-					},
-					"list_of_files": {
-						"type": "Array"
-					},
-					"files_count": {
-						"type": "Integer"
-					}
-				},
-				"folder": {
-					"name": "Scenario-based Questions"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Blob_folder_parameter')]",
-				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Blob_folder_parameter')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_blob",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"p_container": {
-						"type": "string"
-					},
-					"p_folder": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": {
-							"value": "@dataset().p_folder",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().p_container",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
-			]
 		}
 	]
 }

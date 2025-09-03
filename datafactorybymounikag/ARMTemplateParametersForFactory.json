@@ -47,8 +47,8 @@
 		"ls_ADLS_properties_typeProperties_url": {
 			"value": "https://mounikaadls.dfs.core.windows.net/"
 		},
-		"ls_blob_sasUri": {
-			"value": ""
+		"ls_blob_properties_typeProperties_serviceEndpoint": {
+			"value": "https://mounikapracticestorage.blob.core.windows.net/"
 		}
 	}
 }

@@ -13,6 +13,66 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText3_directblob')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_file": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().p_file",
+							"type": "Expression"
+						},
+						"folderPath": "sales",
+						"container": "sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "PRODUCT",
+						"type": "String"
+					},
+					{
+						"name": "CATEGORY",
+						"type": "String"
+					},
+					{
+						"name": "QUANTITY",
+						"type": "String"
+					},
+					{
+						"name": "PRICE",
+						"type": "String"
+					},
+					{
+						"name": "STATUS",
+						"type": "String"
+					},
+					{
+						"name": "TRANSACTION_DATE",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Json1_target')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -551,46 +611,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Blob_folder_parameter')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_blob",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"p_container": {
-						"type": "string"
-					},
-					"p_folder": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"folderPath": {
-							"value": "@dataset().p_folder",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().p_container",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ADF_Snowflake_SCD')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -630,7 +650,7 @@
 							"enableStaging": true,
 							"stagingSettings": {
 								"linkedServiceName": {
-									"referenceName": "ls_blob",
+									"referenceName": "Blob_for_snowflake_withSASURL",
 									"type": "LinkedServiceReference"
 								},
 								"path": "sales/snowflakestaging/"
@@ -640,7 +660,9 @@
 							{
 								"referenceName": "Blob_SCD",
 								"type": "DatasetReference",
-								"parameters": {}
+								"parameters": {
+									"pa_container": "raw"
+								}
 							}
 						],
 						"outputs": [
