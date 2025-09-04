@@ -1,0 +1,18 @@
+{
+	"name": "blob_Trailproperties",
+	"properties": {
+		"parameters": {
+			"ls_param": {
+				"type": "string"
+			}
+		},
+		"annotations": [
+			"FPSTeam"
+		],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"serviceEndpoint": "https://mounikapracticestorage.blob.core.windows.net/",
+			"accountKind": "StorageV2"
+		}
+	}
+}
