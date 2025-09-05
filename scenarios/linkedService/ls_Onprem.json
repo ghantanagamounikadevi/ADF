@@ -1,0 +1,17 @@
+{
+	"name": "ls_Onprem",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "FileServer",
+		"typeProperties": {
+			"host": "\\\\MOUNIKA\\Files",
+			"userId": "ghantamounika05@gmail.com",
+			"encryptedCredential": "eyJDcmVkZW50aWFsSWQiOiIyNjc2Y2Y1YS1lNzM5LTQ5MzktYjVkOC0wNjJmN2RhZTA2MWQiLCJWZXJzaW9uIjoiMi4wIiwiQ2xhc3NUeXBlIjoiTWljcm9zb2Z0LkRhdGFQcm94eS5Db3JlLkludGVyU2VydmljZURhdGFDb250cmFjdC5DcmVkZW50aWFsU1UwNkNZMTQifQ=="
+		},
+		"connectVia": {
+			"referenceName": "self-hostedintegrationruntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
