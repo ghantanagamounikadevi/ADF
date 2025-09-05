@@ -1,0 +1,43 @@
+{
+	"name": "ds_onprem",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ls_Onprem",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"param_file": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "FileServerLocation",
+				"fileName": {
+					"value": "@dataset().param_file",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "sales_id",
+				"type": "String"
+			},
+			{
+				"name": "customer_id",
+				"type": "String"
+			},
+			{
+				"name": "product_id",
+				"type": "String"
+			}
+		]
+	}
+}
