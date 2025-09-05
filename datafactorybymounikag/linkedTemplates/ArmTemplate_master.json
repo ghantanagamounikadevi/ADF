@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_ADLS'"
 		},
+		"ls_Onprem_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_Onprem'"
+		},
 		"AzureKeyVault1_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://mounikakeyvaulttotesting.vault.azure.net/"
@@ -59,9 +63,21 @@
 			"type": "string",
 			"defaultValue": "LAB_DB"
 		},
+		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://mounikapracticestorage.blob.core.windows.net/"
+		},
 		"ls_ADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://mounikaadls.dfs.core.windows.net/"
+		},
+		"ls_Onprem_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "\\\\MOUNIKA\\Files"
+		},
+		"ls_Onprem_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "ghantamounika05@gmail.com"
 		},
 		"ls_blob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -133,6 +149,9 @@
 					"Snowflake_SCDTYPE_properties_typeProperties_database": {
 						"value": "[parameters('Snowflake_SCDTYPE_properties_typeProperties_database')]"
 					},
+					"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
+						"value": "[parameters('blob_Trailproperties_properties_typeProperties_serviceEndpoint')]"
+					},
 					"ls_ADLS_properties_typeProperties_url": {
 						"value": "[parameters('ls_ADLS_properties_typeProperties_url')]"
 					},
@@ -156,6 +175,15 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"ls_Onprem_password": {
+						"value": "[parameters('ls_Onprem_password')]"
+					},
+					"ls_Onprem_properties_typeProperties_host": {
+						"value": "[parameters('ls_Onprem_properties_typeProperties_host')]"
+					},
+					"ls_Onprem_properties_typeProperties_userId": {
+						"value": "[parameters('ls_Onprem_properties_typeProperties_userId')]"
 					}
 				}
 			},

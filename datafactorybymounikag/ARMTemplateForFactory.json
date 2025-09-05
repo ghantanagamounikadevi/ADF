@@ -23,6 +23,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_ADLS'"
 		},
+		"ls_Onprem_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'ls_Onprem'"
+		},
 		"AzureKeyVault1_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://mounikakeyvaulttotesting.vault.azure.net/"
@@ -59,9 +63,21 @@
 			"type": "string",
 			"defaultValue": "LAB_DB"
 		},
+		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://mounikapracticestorage.blob.core.windows.net/"
+		},
 		"ls_ADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://mounikaadls.dfs.core.windows.net/"
+		},
+		"ls_Onprem_properties_typeProperties_host": {
+			"type": "string",
+			"defaultValue": "\\\\MOUNIKA\\Files"
+		},
+		"ls_Onprem_properties_typeProperties_userId": {
+			"type": "string",
+			"defaultValue": "ghantamounika05@gmail.com"
 		},
 		"ls_blob_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -2890,6 +2906,129 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/load_data_from_onprem_to_cloud')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@pipeline().parameters.on_premfile",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "FileServerReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_onprem",
+											"type": "DatasetReference",
+											"parameters": {
+												"param_file": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Blob_all_parameters",
+											"type": "DatasetReference",
+											"parameters": {
+												"pa_container": "sales",
+												"pa_folder": "onprem",
+												"pa_filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"on_premfile": {
+						"type": "array",
+						"defaultValue": [
+							{
+								"name": "products.csv"
+							},
+							{
+								"name": "sales_jan.csv"
+							},
+							{
+								"name": "sales_march.csv"
+							}
+						]
+					}
+				},
+				"folder": {
+					"name": "Scenario-based Questions"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_onprem')]",
+				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3780,6 +3919,80 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_linkedsericetest')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "blob_Trailproperties",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/blob_Trailproperties')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_onprem')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_Onprem",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"param_file": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "FileServerLocation",
+						"fileName": {
+							"value": "@dataset().param_file",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "sales_id",
+						"type": "String"
+					},
+					{
+						"name": "customer_id",
+						"type": "String"
+					},
+					{
+						"name": "product_id",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_Onprem')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/saldb_parameter')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -4100,6 +4313,27 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/blob_Trailproperties')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"ls_param": {
+						"type": "string"
+					}
+				},
+				"annotations": [
+					"FPSTeam"
+				],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"serviceEndpoint": "[parameters('blob_Trailproperties_properties_typeProperties_serviceEndpoint')]",
+					"accountKind": "StorageV2"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ls_ADLS')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -4115,6 +4349,30 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_Onprem')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "FileServer",
+				"typeProperties": {
+					"host": "[parameters('ls_Onprem_properties_typeProperties_host')]",
+					"userId": "[parameters('ls_Onprem_properties_typeProperties_userId')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('ls_Onprem_password')]"
+					}
+				},
+				"connectVia": {
+					"referenceName": "self-hostedintegrationruntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/self-hostedintegrationruntime')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ls_blob')]",

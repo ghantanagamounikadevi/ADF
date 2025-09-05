@@ -17,6 +17,9 @@
 		"ls_ADLS_accountKey": {
 			"value": ""
 		},
+		"ls_Onprem_password": {
+			"value": ""
+		},
 		"AzureKeyVault1_properties_typeProperties_baseUrl": {
 			"value": "https://mounikakeyvaulttotesting.vault.azure.net/"
 		},
@@ -44,8 +47,17 @@
 		"Snowflake_SCDTYPE_properties_typeProperties_database": {
 			"value": "LAB_DB"
 		},
+		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
+			"value": "https://mounikapracticestorage.blob.core.windows.net/"
+		},
 		"ls_ADLS_properties_typeProperties_url": {
 			"value": "https://mounikaadls.dfs.core.windows.net/"
+		},
+		"ls_Onprem_properties_typeProperties_host": {
+			"value": "\\\\MOUNIKA\\Files"
+		},
+		"ls_Onprem_properties_typeProperties_userId": {
+			"value": "ghantamounika05@gmail.com"
 		},
 		"ls_blob_properties_typeProperties_serviceEndpoint": {
 			"value": "https://mounikapracticestorage.blob.core.windows.net/"

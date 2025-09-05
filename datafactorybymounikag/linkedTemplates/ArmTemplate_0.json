@@ -59,6 +59,10 @@
 			"type": "string",
 			"defaultValue": "LAB_DB"
 		},
+		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://mounikapracticestorage.blob.core.windows.net/"
+		},
 		"ls_ADLS_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://mounikaadls.dfs.core.windows.net/"
@@ -228,6 +232,27 @@
 					}
 				},
 				"version": "1.1"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/blob_Trailproperties')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"ls_param": {
+						"type": "string"
+					}
+				},
+				"annotations": [
+					"FPSTeam"
+				],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"serviceEndpoint": "[parameters('blob_Trailproperties_properties_typeProperties_serviceEndpoint')]",
+					"accountKind": "StorageV2"
+				}
 			},
 			"dependsOn": []
 		},
@@ -661,68 +686,6 @@
 					"quoteChar": "\""
 				},
 				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DelimitedText3_blob_tgt')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "ls_blob",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"param_filename": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().param_filename",
-							"type": "Expression"
-						},
-						"folderPath": "staging",
-						"container": "destination"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": [
-					{
-						"name": "PatientID",
-						"type": "String"
-					},
-					{
-						"name": "Department",
-						"type": "String"
-					},
-					{
-						"name": "CheckupDate",
-						"type": "String"
-					},
-					{
-						"name": "HeartRate",
-						"type": "String"
-					},
-					{
-						"name": "BloodPressure",
-						"type": "String"
-					},
-					{
-						"name": "BloodSugar",
-						"type": "String"
-					}
-				]
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
