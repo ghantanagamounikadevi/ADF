@@ -33,7 +33,7 @@
 					"recurrence": {
 						"frequency": "Minute",
 						"interval": 15,
-						"startTime": "2025-09-08T11:40:00",
+						"startTime": "2025-09-08T13:25:00",
 						"timeZone": "Central Standard Time"
 					}
 				}
