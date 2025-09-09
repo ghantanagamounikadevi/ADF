@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "Blob_folder_parameter",
+						"referenceName": "Blob_all_parameters",
 						"type": "DatasetReference"
 					},
 					"name": "source1"
@@ -23,12 +23,17 @@
 			],
 			"transformations": [],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          TRANSACTION_ID as string,",
+				"          PRODUCT as string,",
+				"          TRANSACTION_DATE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     enableCdc: true,",
 				"     mode: 'read',",
-				"     skipInitialLoad: false) ~> source1",
+				"     skipInitialLoad: true) ~> source1",
 				"source1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
