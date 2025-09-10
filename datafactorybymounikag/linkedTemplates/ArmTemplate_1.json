@@ -6,24 +6,80 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "datafactorybymounikag"
-		},
-		"ls_Onprem_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'ls_Onprem'"
-		},
-		"ls_Onprem_properties_typeProperties_host": {
-			"type": "string",
-			"defaultValue": "\\\\MOUNIKA\\Files"
-		},
-		"ls_Onprem_properties_typeProperties_userId": {
-			"type": "string",
-			"defaultValue": "ghantamounika05@gmail.com"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText1')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"param_foldername": {
+						"type": "string"
+					},
+					"param_filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().param_filename",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().param_foldername",
+							"type": "Expression"
+						},
+						"container": "sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DelimitedText2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "*",
+						"folderPath": "sales",
+						"container": "sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/DelimitedText3_blob_tgt')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -662,68 +718,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "autocreate"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/vendor_config')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "SRC_CONTAINER_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SRC_FOLDER_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "SRC_FILENAME",
-						"type": "varchar"
-					},
-					{
-						"name": "TGT_SCHEMA_NAME",
-						"type": "varchar"
-					},
-					{
-						"name": "TGT_TABLENAME",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "VENDORS_CONFIG"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ls_Onprem')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "FileServer",
-				"typeProperties": {
-					"host": "[parameters('ls_Onprem_properties_typeProperties_host')]",
-					"userId": "[parameters('ls_Onprem_properties_typeProperties_userId')]",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('ls_Onprem_password')]"
-					}
-				},
-				"connectVia": {
-					"referenceName": "self-hostedintegrationruntime",
-					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": []

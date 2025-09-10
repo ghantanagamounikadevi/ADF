@@ -175,15 +175,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"ls_Onprem_password": {
-						"value": "[parameters('ls_Onprem_password')]"
-					},
-					"ls_Onprem_properties_typeProperties_host": {
-						"value": "[parameters('ls_Onprem_properties_typeProperties_host')]"
-					},
-					"ls_Onprem_properties_typeProperties_userId": {
-						"value": "[parameters('ls_Onprem_properties_typeProperties_userId')]"
 					}
 				}
 			},
@@ -204,6 +195,15 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"ls_Onprem_password": {
+						"value": "[parameters('ls_Onprem_password')]"
+					},
+					"ls_Onprem_properties_typeProperties_host": {
+						"value": "[parameters('ls_Onprem_properties_typeProperties_host')]"
+					},
+					"ls_Onprem_properties_typeProperties_userId": {
+						"value": "[parameters('ls_Onprem_properties_typeProperties_userId')]"
 					}
 				}
 			},
