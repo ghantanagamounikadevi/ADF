@@ -7,8 +7,7 @@
 		},
 		"parameters": {
 			"table": {
-				"type": "string",
-				"defaultValue": "autocreate"
+				"type": "string"
 			}
 		},
 		"annotations": [],
