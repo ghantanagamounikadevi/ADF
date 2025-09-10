@@ -15,18 +15,6 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataflow": {
-						"referenceName": "dataflow2",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"source1": {
-								"table": "emp_source"
-							},
-							"source2": {
-								"table": "emp_tgt_CDC"
-							}
-						}
-					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
