@@ -4680,7 +4680,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/cdc')]",
+			"name": "[concat(parameters('factoryName'), '/cdc1')]",
 			"type": "Microsoft.DataFactory/factories/adfcdcs",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -4786,7 +4786,7 @@
 					{
 						"TargetEntities": [
 							{
-								"name": "dbo.emp",
+								"name": "dbo.emp_tgt_CDC",
 								"properties": {
 									"schema": [
 										{
@@ -4804,6 +4804,10 @@
 										{
 											"name": "dept_no",
 											"dataType": "integer"
+										},
+										{
+											"name": "inserted_date",
+											"dataType": "timestamp"
 										}
 									],
 									"dslConnectorProperties": [
@@ -4813,7 +4817,7 @@
 										},
 										{
 											"name": "tableName",
-											"value": "emp"
+											"value": "emp_tgt_CDC"
 										},
 										{
 											"name": "allowSchemaDrift",
@@ -4910,7 +4914,7 @@
 						},
 						"DataMapperMappings": [
 							{
-								"targetEntityName": "dbo.emp",
+								"targetEntityName": "dbo.emp_tgt_CDC",
 								"sourceEntityName": "dbo.emp_source",
 								"sourceConnectionReference": {
 									"connectionName": "AzureSqlDatabase1",
@@ -4958,8 +4962,22 @@
 											}
 										},
 										{
+											"name": "inserted_date",
+											"type": "Direct",
+											"functionName": "",
+											"attributeReference": {
+												"name": "inserted_date",
+												"entity": "dbo.emp_source",
+												"entityConnectionReference": {
+													"connectionName": "AzureSqlDatabase1",
+													"type": "linkedservicetype"
+												}
+											}
+										},
+										{
 											"name": "sal",
 											"type": "Direct",
+											"functionName": "",
 											"attributeReference": {
 												"name": "sal",
 												"entity": "dbo.emp_source",
