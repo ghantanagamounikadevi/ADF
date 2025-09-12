@@ -1,0 +1,24 @@
+{
+	"name": "snowflakeDS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Snowflake_keyvalut",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"p_table": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [],
+		"typeProperties": {
+			"schema": "source",
+			"table": {
+				"value": "@dataset().p_table",
+				"type": "Expression"
+			}
+		}
+	}
+}

@@ -1,0 +1,64 @@
+{
+	"name": "repeat_scenario1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "snowflakeDS",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_table": "emp"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Blob_source_BySASURI_link_Forsnowflake",
+						"type": "DatasetReference",
+						"parameters": {
+							"param_container": "sales",
+							"param_folder": "snowflake_source",
+							"param_file": "emp_fromsnowflake.csv"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Practicescenarios"
+		},
+		"annotations": []
+	}
+}
