@@ -5,7 +5,11 @@
 		"type": "AzureBlobStorage",
 		"typeProperties": {
 			"serviceEndpoint": "https://mounikapracticestorage.blob.core.windows.net/",
-			"accountKind": "StorageV2"
+			"accountKind": "StorageV2",
+			"credential": {
+				"referenceName": "credential2",
+				"type": "CredentialReference"
+			}
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/linkedservices"
