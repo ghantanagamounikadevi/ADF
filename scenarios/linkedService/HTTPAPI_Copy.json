@@ -1,0 +1,12 @@
+{
+	"name": "HTTPAPI_Copy",
+	"properties": {
+		"annotations": [],
+		"type": "HttpServer",
+		"typeProperties": {
+			"url": "https://github.com/ghantanagamounikadevi/ADF",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Anonymous"
+		}
+	}
+}
