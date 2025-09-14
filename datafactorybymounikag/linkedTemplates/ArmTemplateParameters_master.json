@@ -14,6 +14,9 @@
 		"Snowflake_SCDTYPE_password": {
 			"value": ""
 		},
+		"Snowflake_keyvalut_password": {
+			"value": ""
+		},
 		"ls_ADLS_accountKey": {
 			"value": ""
 		},
@@ -47,7 +50,13 @@
 		"Snowflake_SCDTYPE_properties_typeProperties_database": {
 			"value": "LAB_DB"
 		},
+		"Snowflake_keyvalut_properties_typeProperties_database": {
+			"value": "snowflake_learning_db"
+		},
 		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
+			"value": "https://mounikapracticestorage.blob.core.windows.net/"
+		},
+		"linkedService1_properties_typeProperties_serviceEndpoint": {
 			"value": "https://mounikapracticestorage.blob.core.windows.net/"
 		},
 		"ls_ADLS_properties_typeProperties_url": {

@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'Snowflake_SCDTYPE'"
 		},
+		"Snowflake_keyvalut_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'Snowflake_keyvalut'"
+		},
 		"ls_ADLS_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_ADLS'"
@@ -63,7 +67,15 @@
 			"type": "string",
 			"defaultValue": "LAB_DB"
 		},
+		"Snowflake_keyvalut_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "snowflake_learning_db"
+		},
 		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
+			"type": "string",
+			"defaultValue": "https://mounikapracticestorage.blob.core.windows.net/"
+		},
+		"linkedService1_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
 			"defaultValue": "https://mounikapracticestorage.blob.core.windows.net/"
 		},
@@ -1236,6 +1248,340 @@
 				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]",
 				"[concat(variables('factoryId'), '/datasets/snowflake_allparameter_tgt')]",
 				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Repeat_Scenario3')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SnowflakeV2Sink",
+								"importSettings": {
+									"type": "SnowflakeImportCopyCommand"
+								}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "Blob_for_snowflake_withSASURL",
+									"type": "LinkedServiceReference"
+								},
+								"path": "raw/statging"
+							},
+							"enableSkipIncompatibleRow": false,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Warning",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "Blob_for_snowflake_withSASURL",
+										"type": "LinkedServiceReference"
+									},
+									"path": "raw/logging"
+								}
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "Manufacturer",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MANUFACTURER",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Model",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MODEL",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Engine size",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ENGINE_SIZE",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "Fuel type",
+											"type": "String"
+										},
+										"sink": {
+											"name": "FUEL_TYPE",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "Year of manufacture",
+											"type": "String"
+										},
+										"sink": {
+											"name": "YAER_OF_MANUFACTURE",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "Mileage",
+											"type": "String"
+										},
+										"sink": {
+											"name": "MILEAGE",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "Price",
+											"type": "String"
+										},
+										"sink": {
+											"name": "PRICE",
+											"type": "Int64"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "Blob_all_parameters",
+								"type": "DatasetReference",
+								"parameters": {
+									"pa_container": "raw",
+									"pa_folder": "carsales",
+									"pa_filename": "car_sales_data.csv"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "snowflakeDS",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_table": "CAR_SALES_DATA2"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]",
+				"[concat(variables('factoryId'), '/datasets/snowflakeDS')]",
+				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Repeat_Scenario4')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Metadata1",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "Blob_folder_parameter",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_container": "sales",
+									"p_folder": "sales"
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "Filter1",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "Get Metadata1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Metadata1').output.childItems",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@startswith(item().name,'sales')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Filter1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Filter1').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data1",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "Blob_all_parameters",
+											"type": "DatasetReference",
+											"parameters": {
+												"pa_container": "sales",
+												"pa_folder": "sales",
+												"pa_filename": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "Blob_folder_parameter",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_container": "sales",
+												"p_folder": "filteredfiles"
+											}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Blob_folder_parameter')]",
+				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]"
 			]
 		},
 		{
@@ -3227,6 +3573,212 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/repeat_scenario1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SnowflakeV2Source",
+								"exportSettings": {
+									"type": "SnowflakeExportCopyCommand"
+								}
+							},
+							"sink": {
+								"type": "SnowflakeV2Sink",
+								"importSettings": {
+									"type": "SnowflakeImportCopyCommand"
+								}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "Blob_for_snowflake_withSASURL",
+									"type": "LinkedServiceReference"
+								},
+								"path": "sales/staging/"
+							},
+							"enableSkipIncompatibleRow": true,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Info",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "ls_blob",
+										"type": "LinkedServiceReference"
+									},
+									"path": "raw/incompatablerows"
+								}
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "EMPID",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "EMPID",
+											"type": "Int64"
+										}
+									},
+									{
+										"source": {
+											"name": "ENAME",
+											"type": "String"
+										},
+										"sink": {
+											"name": "ENAME",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "JOB",
+											"type": "String"
+										},
+										"sink": {
+											"name": "JOB",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"name": "DEPTNO",
+											"type": "Int64"
+										},
+										"sink": {
+											"name": "DEPTNO",
+											"type": "Int64"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "snowflakeDS",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_table": "EMP"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "snowflakeDS",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_table": "MP_TGT"
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"folder": {
+					"name": "Practicescenarios"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/snowflakeDS')]",
+				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]",
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/repeate_scenario2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SnowflakeV2Source",
+								"exportSettings": {
+									"type": "SnowflakeExportCopyCommand"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": true,
+							"stagingSettings": {
+								"linkedServiceName": {
+									"referenceName": "Blob_for_snowflake_withSASURL",
+									"type": "LinkedServiceReference"
+								},
+								"path": "sales/josonsatge/"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "snowflakeDS",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_table": "EMP"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Json1_target",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/snowflakeDS')]",
+				"[concat(variables('factoryId'), '/datasets/Json1_target')]",
+				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3749,7 +4301,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "ls_blob",
+					"referenceName": "Blob_for_snowflake_withSASURL",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -3757,8 +4309,12 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "\n",
+							"type": "Expression"
+						},
 						"folderPath": {
-							"value": "Empjson/@{formatDateTime(utcNow(),'yyyy')}/@{formatDateTime(utcNow(),'MM')}/@{formatDateTime(utcNow(),'dd')}",
+							"value": "Empjson@{formatDateTime(convertTimeZone(utcNow(),'UTC','Central Standard Time'),'yyyyMMdd')}/Emp_@{formatDateTime(convertTimeZone(utcNow(),'UTC','Central Standard Time'),'yyyyMMdd_HHmmss')}.json",
 							"type": "Expression"
 						},
 						"container": "sales"
@@ -3767,7 +4323,7 @@
 				"schema": {}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
 			]
 		},
 		{
@@ -4219,6 +4775,60 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/snowflakeDS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Snowflake_keyvalut",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_table": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "SnowflakeV2Table",
+				"schema": [
+					{
+						"name": "EMPID",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "ENAME",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "JOB",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "DEPTNO",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "SOURCE",
+					"table": {
+						"value": "@dataset().p_table",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Snowflake_keyvalut')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/snowflake_SCD_Stgtable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -4395,10 +5005,16 @@
 				"annotations": [],
 				"type": "AzureKeyVault",
 				"typeProperties": {
-					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]",
+					"credential": {
+						"referenceName": "credential2",
+						"type": "CredentialReference"
+					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/credentials/credential2')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase1')]",
@@ -4510,6 +5126,28 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Snowflake_keyvalut')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SnowflakeV2",
+				"typeProperties": {
+					"authenticationType": "Basic",
+					"accountIdentifier": "zbyveck-bh87091",
+					"user": "mounika",
+					"database": "[parameters('Snowflake_keyvalut_properties_typeProperties_database')]",
+					"warehouse": "COMPUTE_WH",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('Snowflake_keyvalut_password')]"
+					}
+				},
+				"version": "1.1"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/blob_Trailproperties')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -4529,6 +5167,26 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/linkedService1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"serviceEndpoint": "[parameters('linkedService1_properties_typeProperties_serviceEndpoint')]",
+					"accountKind": "StorageV2",
+					"credential": {
+						"referenceName": "credential2",
+						"type": "CredentialReference"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/credentials/credential2')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ls_ADLS')]",
@@ -4580,10 +5238,16 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"serviceEndpoint": "[parameters('ls_blob_properties_typeProperties_serviceEndpoint')]",
-					"accountKind": "StorageV2"
+					"accountKind": "StorageV2",
+					"credential": {
+						"referenceName": "credential2",
+						"type": "CredentialReference"
+					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/credentials/credential2')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/SCDTrigger')]",
@@ -4668,6 +5332,18 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/credential2')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/ea7de382-728e-4552-a83f-ad71977591e7/resourcegroups/ADF/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mounikamanagedidentity"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/credential2_forkeyvalut')]",
 			"type": "Microsoft.DataFactory/factories/credentials",
 			"apiVersion": "2018-06-01",
@@ -4678,334 +5354,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/cdc1')]",
-			"type": "Microsoft.DataFactory/factories/adfcdcs",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"SourceConnectionsInfo": [
-					{
-						"SourceEntities": [
-							{
-								"name": "dbo.emp_source",
-								"properties": {
-									"schema": [
-										{
-											"name": "empid",
-											"dataType": "integer"
-										},
-										{
-											"name": "ename",
-											"dataType": "string"
-										},
-										{
-											"name": "sal",
-											"dataType": "integer"
-										},
-										{
-											"name": "dept_no",
-											"dataType": "integer"
-										},
-										{
-											"name": "inserted_date",
-											"dataType": "timestamp"
-										}
-									],
-									"dslConnectorProperties": [
-										{
-											"name": "schemaName",
-											"value": "dbo"
-										},
-										{
-											"name": "tableName",
-											"value": "emp_source"
-										},
-										{
-											"name": "enableCdc",
-											"value": true
-										},
-										{
-											"name": "waterMarkColumn",
-											"value": "inserted_date"
-										},
-										{
-											"name": "allowSchemaDrift",
-											"value": false
-										},
-										{
-											"name": "inferDriftedColumnTypes",
-											"value": false
-										}
-									]
-								}
-							}
-						],
-						"Connection": {
-							"linkedService": {
-								"referenceName": "AzureSqlDatabase1",
-								"type": "LinkedServiceReference"
-							},
-							"linkedServiceType": "AzureSqlDatabase",
-							"type": "linkedservicetype",
-							"isInlineDataset": true,
-							"commonDslConnectorProperties": [
-								{
-									"name": "allowSchemaDrift",
-									"value": true
-								},
-								{
-									"name": "inferDriftedColumnTypes",
-									"value": true
-								},
-								{
-									"name": "format",
-									"value": "table"
-								},
-								{
-									"name": "store",
-									"value": "sqlserver"
-								},
-								{
-									"name": "databaseType",
-									"value": "databaseType"
-								},
-								{
-									"name": "database",
-									"value": "database"
-								},
-								{
-									"name": "skipInitialLoad",
-									"value": true
-								}
-							]
-						}
-					}
-				],
-				"TargetConnectionsInfo": [
-					{
-						"TargetEntities": [
-							{
-								"name": "dbo.emp_tgt_CDC",
-								"properties": {
-									"schema": [
-										{
-											"name": "empid",
-											"dataType": "integer"
-										},
-										{
-											"name": "ename",
-											"dataType": "string"
-										},
-										{
-											"name": "sal",
-											"dataType": "integer"
-										},
-										{
-											"name": "dept_no",
-											"dataType": "integer"
-										},
-										{
-											"name": "inserted_date",
-											"dataType": "timestamp"
-										}
-									],
-									"dslConnectorProperties": [
-										{
-											"name": "schemaName",
-											"value": "dbo"
-										},
-										{
-											"name": "tableName",
-											"value": "emp_tgt_CDC"
-										},
-										{
-											"name": "allowSchemaDrift",
-											"value": false
-										},
-										{
-											"name": "inferDriftedColumnTypes",
-											"value": false
-										},
-										{
-											"name": "keys",
-											"value": [
-												"empid"
-											]
-										},
-										{
-											"name": "deletable",
-											"value": true
-										},
-										{
-											"name": "updateable",
-											"value": true
-										},
-										{
-											"name": "upsertable",
-											"value": true
-										},
-										{
-											"name": "defaultToUpsert",
-											"value": true
-										}
-									]
-								}
-							}
-						],
-						"Connection": {
-							"linkedService": {
-								"referenceName": "AzureSqlDatabase1",
-								"type": "LinkedServiceReference"
-							},
-							"linkedServiceType": "AzureSqlDatabase",
-							"type": "linkedservicetype",
-							"isInlineDataset": true,
-							"commonDslConnectorProperties": [
-								{
-									"name": "allowSchemaDrift",
-									"value": true
-								},
-								{
-									"name": "inferDriftedColumnTypes",
-									"value": true
-								},
-								{
-									"name": "format",
-									"value": "table"
-								},
-								{
-									"name": "store",
-									"value": "sqlserver"
-								},
-								{
-									"name": "databaseType",
-									"value": "databaseType"
-								},
-								{
-									"name": "database",
-									"value": "database"
-								},
-								{
-									"name": "deletable",
-									"value": false
-								},
-								{
-									"name": "insertable",
-									"value": true
-								},
-								{
-									"name": "updateable",
-									"value": false
-								},
-								{
-									"name": "upsertable",
-									"value": false
-								},
-								{
-									"name": "skipDuplicateMapInputs",
-									"value": true
-								},
-								{
-									"name": "skipDuplicateMapOutputs",
-									"value": true
-								}
-							]
-						},
-						"DataMapperMappings": [
-							{
-								"targetEntityName": "dbo.emp_tgt_CDC",
-								"sourceEntityName": "dbo.emp_source",
-								"sourceConnectionReference": {
-									"connectionName": "AzureSqlDatabase1",
-									"type": "linkedservicetype"
-								},
-								"attributeMappingInfo": {
-									"attributeMappings": [
-										{
-											"name": "dept_no",
-											"type": "Direct",
-											"functionName": "",
-											"attributeReference": {
-												"name": "dept_no",
-												"entity": "dbo.emp_source",
-												"entityConnectionReference": {
-													"connectionName": "AzureSqlDatabase1",
-													"type": "linkedservicetype"
-												}
-											}
-										},
-										{
-											"name": "empid",
-											"type": "Direct",
-											"functionName": "",
-											"attributeReference": {
-												"name": "empid",
-												"entity": "dbo.emp_source",
-												"entityConnectionReference": {
-													"connectionName": "AzureSqlDatabase1",
-													"type": "linkedservicetype"
-												}
-											}
-										},
-										{
-											"name": "ename",
-											"type": "Direct",
-											"functionName": "",
-											"attributeReference": {
-												"name": "ename",
-												"entity": "dbo.emp_source",
-												"entityConnectionReference": {
-													"connectionName": "AzureSqlDatabase1",
-													"type": "linkedservicetype"
-												}
-											}
-										},
-										{
-											"name": "inserted_date",
-											"type": "Direct",
-											"functionName": "",
-											"attributeReference": {
-												"name": "inserted_date",
-												"entity": "dbo.emp_source",
-												"entityConnectionReference": {
-													"connectionName": "AzureSqlDatabase1",
-													"type": "linkedservicetype"
-												}
-											}
-										},
-										{
-											"name": "sal",
-											"type": "Direct",
-											"functionName": "",
-											"attributeReference": {
-												"name": "sal",
-												"entity": "dbo.emp_source",
-												"entityConnectionReference": {
-													"connectionName": "AzureSqlDatabase1",
-													"type": "linkedservicetype"
-												}
-											}
-										}
-									]
-								}
-							}
-						],
-						"Relationships": []
-					}
-				],
-				"Policy": {
-					"recurrence": {
-						"frequency": "Minute",
-						"interval": 1
-					},
-					"mode": "Microbatch"
-				},
-				"allowVNetOverride": false
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase1')]"
-			]
 		}
 	]
 }
