@@ -12,9 +12,34 @@
 		},
 		"annotations": [],
 		"type": "SnowflakeV2Table",
-		"schema": [],
+		"schema": [
+			{
+				"name": "EMPID",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "ENAME",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "JOB",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "DEPTNO",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			}
+		],
 		"typeProperties": {
-			"schema": "source",
+			"schema": "SOURCE",
 			"table": {
 				"value": "@dataset().p_table",
 				"type": "Expression"

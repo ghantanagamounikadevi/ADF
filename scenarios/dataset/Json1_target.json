@@ -2,7 +2,7 @@
 	"name": "Json1_target",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "ls_blob",
+			"referenceName": "Blob_for_snowflake_withSASURL",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
@@ -10,8 +10,12 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "\n",
+					"type": "Expression"
+				},
 				"folderPath": {
-					"value": "Empjson/@{formatDateTime(utcNow(),'yyyy')}/@{formatDateTime(utcNow(),'MM')}/@{formatDateTime(utcNow(),'dd')}",
+					"value": "Empjson@{formatDateTime(convertTimeZone(utcNow(),'UTC','Central Standard Time'),'yyyyMMdd')}/Emp_@{formatDateTime(convertTimeZone(utcNow(),'UTC','Central Standard Time'),'yyyyMMdd_HHmmss')}.json",
 					"type": "Expression"
 				},
 				"container": "sales"

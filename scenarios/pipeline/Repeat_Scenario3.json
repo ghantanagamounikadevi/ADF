@@ -1,5 +1,5 @@
 {
-	"name": "repeat_scenario1",
+	"name": "Repeat_Scenario3",
 	"properties": {
 		"activities": [
 			{
@@ -16,9 +16,14 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "SnowflakeV2Source",
-						"exportSettings": {
-							"type": "SnowflakeExportCopyCommand"
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
 						}
 					},
 					"sink": {
@@ -33,63 +38,79 @@
 							"referenceName": "Blob_for_snowflake_withSASURL",
 							"type": "LinkedServiceReference"
 						},
-						"path": "sales/staging/"
+						"path": "raw/statging"
 					},
-					"enableSkipIncompatibleRow": true,
-					"logSettings": {
-						"enableCopyActivityLog": true,
-						"copyActivityLogSettings": {
-							"logLevel": "Info",
-							"enableReliableLogging": false
-						},
-						"logLocationSettings": {
-							"linkedServiceName": {
-								"referenceName": "ls_blob",
-								"type": "LinkedServiceReference"
-							},
-							"path": "raw/incompatablerows"
-						}
-					},
+					"enableSkipIncompatibleRow": false,
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
 							{
 								"source": {
-									"name": "EMPID",
-									"type": "Int64"
-								},
-								"sink": {
-									"name": "EMPID",
-									"type": "Int64"
-								}
-							},
-							{
-								"source": {
-									"name": "ENAME",
+									"name": "Manufacturer",
 									"type": "String"
 								},
 								"sink": {
-									"name": "ENAME",
+									"name": "MANUFACTURER",
 									"type": "String"
 								}
 							},
 							{
 								"source": {
-									"name": "JOB",
+									"name": "Model",
 									"type": "String"
 								},
 								"sink": {
-									"name": "JOB",
+									"name": "MODEL",
 									"type": "String"
 								}
 							},
 							{
 								"source": {
-									"name": "DEPTNO",
-									"type": "Int64"
+									"name": "Engine size",
+									"type": "String"
 								},
 								"sink": {
-									"name": "DEPTNO",
+									"name": "ENGINE_SIZE",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "Fuel type",
+									"type": "String"
+								},
+								"sink": {
+									"name": "FUEL_TYPE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Year of manufacture",
+									"type": "String"
+								},
+								"sink": {
+									"name": "YAER_OF_MANUFACTURE",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "Mileage",
+									"type": "String"
+								},
+								"sink": {
+									"name": "MILEAGE",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "Price",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRICE",
 									"type": "Int64"
 								}
 							}
@@ -98,10 +119,12 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "snowflakeDS",
+						"referenceName": "Blob_all_parameters",
 						"type": "DatasetReference",
 						"parameters": {
-							"p_table": "EMP"
+							"pa_container": "raw",
+							"pa_folder": "carsales",
+							"pa_filename": "car_sales_data.csv"
 						}
 					}
 				],
@@ -110,15 +133,12 @@
 						"referenceName": "snowflakeDS",
 						"type": "DatasetReference",
 						"parameters": {
-							"p_table": "MP_TGT"
+							"p_table": "CAR_SALES_DATA2"
 						}
 					}
 				]
 			}
 		],
-		"folder": {
-			"name": "Practicescenarios"
-		},
 		"annotations": []
 	}
 }
