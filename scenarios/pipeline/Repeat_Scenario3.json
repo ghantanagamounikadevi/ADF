@@ -41,6 +41,20 @@
 						"path": "raw/statging"
 					},
 					"enableSkipIncompatibleRow": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Warning",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "Blob_for_snowflake_withSASURL",
+								"type": "LinkedServiceReference"
+							},
+							"path": "raw/logging"
+						}
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
