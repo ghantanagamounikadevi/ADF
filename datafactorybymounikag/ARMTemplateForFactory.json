@@ -71,6 +71,10 @@
 			"type": "string",
 			"defaultValue": "LAB_DB"
 		},
+		"Snowflake_SCDTYPE2_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
+		},
 		"Snowflake_keyvalut_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "SNOWFLAKE_LEARNING_DB"
@@ -4652,6 +4656,104 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SnowflakeTable_SCDtype2TGT')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Snowflake_SCDTYPE2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SnowflakeV2Table",
+				"schema": [
+					{
+						"name": "EMPID",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "ENAME",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "SAL",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "DEPTNO",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "IS_ACTIVE",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "SOURCE",
+					"table": "EMP_TGT"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Snowflake_SCDTYPE2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Snowflake_SOURCESCD')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Snowflake_SCDTYPE2",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SnowflakeV2Table",
+				"schema": [
+					{
+						"name": "EMPID",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "ENAME",
+						"type": "VARCHAR",
+						"precision": 0,
+						"scale": 0
+					},
+					{
+						"name": "SAL",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					},
+					{
+						"name": "DEPTNO",
+						"type": "NUMBER",
+						"precision": 38,
+						"scale": 0
+					}
+				],
+				"typeProperties": {
+					"schema": "SOURCE",
+					"table": "EMP_SOURCE"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/Snowflake_SCDTYPE2')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/contract_configtable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -5445,6 +5547,34 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Snowflake_SCDTYPE2')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SnowflakeV2",
+				"typeProperties": {
+					"authenticationType": "Basic",
+					"accountIdentifier": "zbyveck-bh87091",
+					"user": "mounika",
+					"database": "[parameters('Snowflake_SCDTYPE2_properties_typeProperties_database')]",
+					"warehouse": "COMPUTE_WH",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "mounika"
+					}
+				},
+				"version": "1.1"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Snowflake_keyvalut')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -5718,14 +5848,14 @@
 					"sources": [
 						{
 							"dataset": {
-								"referenceName": "DS_SOURCE_SCDTYPE2",
+								"referenceName": "Snowflake_SOURCESCD",
 								"type": "DatasetReference"
 							},
 							"name": "sourcefile"
 						},
 						{
 							"dataset": {
-								"referenceName": "target_ds_scdtype2",
+								"referenceName": "SnowflakeTable_SCDtype2TGT",
 								"type": "DatasetReference"
 							},
 							"name": "targetfile"
@@ -5734,14 +5864,14 @@
 					"sinks": [
 						{
 							"dataset": {
-								"referenceName": "target_ds_scdtype2",
+								"referenceName": "SnowflakeTable_SCDtype2TGT",
 								"type": "DatasetReference"
 							},
 							"name": "sink1"
 						},
 						{
 							"dataset": {
-								"referenceName": "target_ds_scdtype2",
+								"referenceName": "SnowflakeTable_SCDtype2TGT",
 								"type": "DatasetReference"
 							},
 							"name": "sink2"
@@ -5761,9 +5891,6 @@
 							"name": "select1"
 						},
 						{
-							"name": "exists1"
-						},
-						{
 							"name": "alterRow1"
 						},
 						{
@@ -5777,84 +5904,102 @@
 						},
 						{
 							"name": "isactive"
+						},
+						{
+							"name": "exists3"
 						}
 					],
 					"scriptLines": [
 						"source(output(",
-						"          empid as string,",
-						"          ename as string,",
-						"          sal as string,",
-						"          dept_no as string",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          SAL as decimal(38,0),",
+						"          DEPTNO as decimal(38,0)",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> sourcefile",
+						"     format: 'table') ~> sourcefile",
 						"source(output(",
-						"          empid as string,",
-						"          ename as string,",
-						"          sal as string,",
-						"          deptno as string",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          SAL as decimal(38,0),",
+						"          DEPTNO as decimal(38,0),",
+						"          IS_ACTIVE as decimal(38,0)",
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
-						"     ignoreNoFilesFound: false) ~> targetfile",
-						"sourcefile derive(md5_source = md5(ename,sal,dept_no)) ~> sourcemd5derivedcolumn",
-						"targetfile derive(md5_target = md5(ename,sal,deptno)) ~> derivedColumntargetmd5",
+						"     format: 'table') ~> targetfile",
+						"sourcefile derive(md5_source = md5(ENAME,SAL,DEPTNO)) ~> sourcemd5derivedcolumn",
+						"targetfile derive(md5_target = md5(ENAME,SAL,DEPTNO)) ~> derivedColumntargetmd5",
 						"sourcemd5derivedcolumn, derivedColumntargetmd5 exists(md5_source == md5_target,",
 						"     negate:true,",
 						"     broadcast: 'auto')~> doesnotexists1",
 						"isactive select(mapColumn(",
-						"          empid,",
-						"          ename,",
-						"          sal,",
-						"          dept_no",
+						"          EMPID,",
+						"          ENAME,",
+						"          SAL,",
+						"          DEPTNO,",
+						"          isactive",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select1",
-						"derivedColumntargetmd5, sourcemd5derivedcolumn exists(targetfile@empid == sourcefile@empid,",
-						"     negate:false,",
-						"     broadcast: 'auto')~> exists1",
 						"notisactive alterRow(updateIf(true())) ~> alterRow1",
 						"exists2 derive(isactive = 0) ~> notisactive",
-						"exists1, sourcemd5derivedcolumn exists(md5_target == md5_source,",
+						"exists3, sourcemd5derivedcolumn exists(md5_target == md5_source,",
 						"     negate:true,",
 						"     broadcast: 'auto')~> exists2",
 						"alterRow1 select(mapColumn(",
-						"          empid,",
-						"          ename,",
-						"          sal,",
-						"          deptno,",
+						"          EMPID,",
+						"          ENAME,",
+						"          SAL,",
+						"          DEPTNO,",
+						"          IS_ACTIVE,",
 						"          isactive",
 						"     ),",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> select2",
 						"doesnotexists1 derive(isactive = 1) ~> isactive",
+						"derivedColumntargetmd5, sourcemd5derivedcolumn exists(targetfile@EMPID == sourcefile@EMPID,",
+						"     negate:false,",
+						"     broadcast: 'auto')~> exists3",
 						"select1 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          empid as string,",
-						"          ename as string,",
-						"          sal as string,",
-						"          deptno as string",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          SAL as decimal(38,0),",
+						"          DEPTNO as decimal(38,0),",
+						"          IS_ACTIVE as decimal(38,0)",
 						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink1",
 						"select2 sink(allowSchemaDrift: true,",
 						"     validateSchema: false,",
 						"     input(",
-						"          empid as string,",
-						"          ename as string,",
-						"          sal as string,",
-						"          deptno as string",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          SAL as decimal(38,0),",
+						"          DEPTNO as decimal(38,0),",
+						"          IS_ACTIVE as decimal(38,0)",
 						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true) ~> sink2"
 					]
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_SOURCE_SCDTYPE2')]",
-				"[concat(variables('factoryId'), '/datasets/target_ds_scdtype2')]"
+				"[concat(variables('factoryId'), '/datasets/Snowflake_SOURCESCD')]",
+				"[concat(variables('factoryId'), '/datasets/SnowflakeTable_SCDtype2TGT')]"
 			]
 		},
 		{

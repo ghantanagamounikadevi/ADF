@@ -71,6 +71,10 @@
 			"type": "string",
 			"defaultValue": "LAB_DB"
 		},
+		"Snowflake_SCDTYPE2_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
+		},
 		"Snowflake_keyvalut_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "SNOWFLAKE_LEARNING_DB"
@@ -229,6 +233,9 @@
 					},
 					"SNOWFLAKE_SCRIPT_properties_typeProperties_database": {
 						"value": "[parameters('SNOWFLAKE_SCRIPT_properties_typeProperties_database')]"
+					},
+					"Snowflake_SCDTYPE2_properties_typeProperties_database": {
+						"value": "[parameters('Snowflake_SCDTYPE2_properties_typeProperties_database')]"
 					},
 					"Snowflake_keyvalut_properties_typeProperties_database": {
 						"value": "[parameters('Snowflake_keyvalut_properties_typeProperties_database')]"

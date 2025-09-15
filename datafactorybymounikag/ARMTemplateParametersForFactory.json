@@ -53,6 +53,9 @@
 		"Snowflake_SCDTYPE_properties_typeProperties_database": {
 			"value": "LAB_DB"
 		},
+		"Snowflake_SCDTYPE2_properties_typeProperties_database": {
+			"value": "SNOWFLAKE_LEARNING_DB"
+		},
 		"Snowflake_keyvalut_properties_typeProperties_database": {
 			"value": "SNOWFLAKE_LEARNING_DB"
 		},

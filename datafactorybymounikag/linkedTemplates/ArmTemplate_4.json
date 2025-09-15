@@ -13,6 +13,277 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/DF_Schemadrift')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "snowflakeDS",
+								"type": "DatasetReference"
+							},
+							"name": "source1"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "snowflakeDS",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						}
+					],
+					"transformations": [
+						{
+							"name": "derivedColumn1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          JOB as string,",
+						"          DEPTNO as decimal(38,0)",
+						"     ),",
+						"     allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     format: 'table') ~> source1",
+						"source1 derive(concatnameandjob = concat(ENAME,JOB)) ~> derivedColumn1",
+						"derivedColumn1 sink(allowSchemaDrift: false,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          JOB as string,",
+						"          DEPTNO as decimal(38,0)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     stageInsert: true) ~> sink1"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_SCDTYPE2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "Snowflake_SOURCESCD",
+								"type": "DatasetReference"
+							},
+							"name": "sourcefile"
+						},
+						{
+							"dataset": {
+								"referenceName": "SnowflakeTable_SCDtype2TGT",
+								"type": "DatasetReference"
+							},
+							"name": "targetfile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "SnowflakeTable_SCDtype2TGT",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "SnowflakeTable_SCDtype2TGT",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "sourcemd5derivedcolumn"
+						},
+						{
+							"name": "derivedColumntargetmd5"
+						},
+						{
+							"name": "doesnotexists1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "alterRow1"
+						},
+						{
+							"name": "notisactive"
+						},
+						{
+							"name": "exists2"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "isactive"
+						},
+						{
+							"name": "exists3"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          SAL as decimal(38,0),",
+						"          DEPTNO as decimal(38,0)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'table') ~> sourcefile",
+						"source(output(",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          SAL as decimal(38,0),",
+						"          DEPTNO as decimal(38,0),",
+						"          IS_ACTIVE as decimal(38,0)",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     format: 'table') ~> targetfile",
+						"sourcefile derive(md5_source = md5(ENAME,SAL,DEPTNO)) ~> sourcemd5derivedcolumn",
+						"targetfile derive(md5_target = md5(ENAME,SAL,DEPTNO)) ~> derivedColumntargetmd5",
+						"sourcemd5derivedcolumn, derivedColumntargetmd5 exists(md5_source == md5_target,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> doesnotexists1",
+						"isactive select(mapColumn(",
+						"          EMPID,",
+						"          ENAME,",
+						"          SAL,",
+						"          DEPTNO,",
+						"          isactive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"notisactive alterRow(updateIf(true())) ~> alterRow1",
+						"exists2 derive(isactive = 0) ~> notisactive",
+						"exists3, sourcemd5derivedcolumn exists(md5_target == md5_source,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> exists2",
+						"alterRow1 select(mapColumn(",
+						"          EMPID,",
+						"          ENAME,",
+						"          SAL,",
+						"          DEPTNO,",
+						"          IS_ACTIVE,",
+						"          isactive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"doesnotexists1 derive(isactive = 1) ~> isactive",
+						"derivedColumntargetmd5, sourcemd5derivedcolumn exists(targetfile@EMPID == sourcefile@EMPID,",
+						"     negate:false,",
+						"     broadcast: 'auto')~> exists3",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          SAL as decimal(38,0),",
+						"          DEPTNO as decimal(38,0),",
+						"          IS_ACTIVE as decimal(38,0)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          EMPID as decimal(38,0),",
+						"          ENAME as string,",
+						"          SAL as decimal(38,0),",
+						"          DEPTNO as decimal(38,0),",
+						"          IS_ACTIVE as decimal(38,0)",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCDTYPE2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow_SCDTYPE2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow_SCDTYPE2",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourcefile": {},
+									"targetfile": {},
+									"sink1": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow_SCDTYPE2')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/repeat_scenario5_Schemadrift')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -58,7 +329,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DF_Schemadrift')]"
+			]
 		}
 	]
 }
