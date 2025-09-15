@@ -1,0 +1,143 @@
+{
+	"name": "dataflow_SCDTYPE2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SOURCE_SCDTYPE2",
+						"type": "DatasetReference"
+					},
+					"name": "sourcefile"
+				},
+				{
+					"dataset": {
+						"referenceName": "target_ds_scdtype2",
+						"type": "DatasetReference"
+					},
+					"name": "targetfile"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "target_ds_scdtype2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				},
+				{
+					"dataset": {
+						"referenceName": "target_ds_scdtype2",
+						"type": "DatasetReference"
+					},
+					"name": "sink2"
+				}
+			],
+			"transformations": [
+				{
+					"name": "sourcemd5derivedcolumn"
+				},
+				{
+					"name": "derivedColumntargetmd5"
+				},
+				{
+					"name": "doesnotexists1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "isactive"
+				},
+				{
+					"name": "exists1"
+				},
+				{
+					"name": "alterRow1"
+				},
+				{
+					"name": "notisactive"
+				},
+				{
+					"name": "exists2"
+				},
+				{
+					"name": "select2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          empid as string,",
+				"          ename as string,",
+				"          sal as string,",
+				"          dept_no as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcefile",
+				"source(output(",
+				"          empid as string,",
+				"          ename as string,",
+				"          sal as string,",
+				"          deptno as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> targetfile",
+				"sourcefile derive(md5_source = md5(ename,sal,dept_no)) ~> sourcemd5derivedcolumn",
+				"targetfile derive(md5_target = md5(ename,sal,deptno)) ~> derivedColumntargetmd5",
+				"sourcemd5derivedcolumn, derivedColumntargetmd5 exists(md5_source == md5_target,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> doesnotexists1",
+				"doesnotexists1 select(mapColumn(",
+				"          empid,",
+				"          ename,",
+				"          sal,",
+				"          dept_no",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(isactive = 1) ~> isactive",
+				"derivedColumntargetmd5, sourcemd5derivedcolumn exists(targetfile@empid == sourcefile@empid,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists1",
+				"notisactive alterRow(updateIf(true())) ~> alterRow1",
+				"exists2 derive(isactive = 0) ~> notisactive",
+				"exists1, sourcemd5derivedcolumn exists(md5_target == md5_source,",
+				"     negate:true,",
+				"     broadcast: 'auto')~> exists2",
+				"alterRow1 select(mapColumn(",
+				"          empid,",
+				"          ename,",
+				"          sal,",
+				"          deptno,",
+				"          isactive",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"isactive sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          empid as string,",
+				"          ename as string,",
+				"          sal as string,",
+				"          deptno as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1",
+				"select2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          empid as string,",
+				"          ename as string,",
+				"          sal as string,",
+				"          deptno as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink2"
+			]
+		}
+	}
+}
