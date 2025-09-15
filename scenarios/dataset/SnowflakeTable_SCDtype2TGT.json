@@ -1,0 +1,47 @@
+{
+	"name": "SnowflakeTable_SCDtype2TGT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Snowflake_SCDTYPE2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SnowflakeV2Table",
+		"schema": [
+			{
+				"name": "EMPID",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "ENAME",
+				"type": "VARCHAR",
+				"precision": 0,
+				"scale": 0
+			},
+			{
+				"name": "SAL",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "DEPTNO",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			},
+			{
+				"name": "IS_ACTIVE",
+				"type": "NUMBER",
+				"precision": 38,
+				"scale": 0
+			}
+		],
+		"typeProperties": {
+			"schema": "SOURCE",
+			"table": "EMP_TGT"
+		}
+	}
+}
