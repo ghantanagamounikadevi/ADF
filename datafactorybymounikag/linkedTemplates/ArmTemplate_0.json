@@ -19,10 +19,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'Snowflake_SCDTYPE'"
 		},
-		"Snowflake_keyvalut_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'Snowflake_keyvalut'"
-		},
 		"ls_ADLS_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_ADLS'"
@@ -43,6 +39,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'Blob_for_snowflake_withSASURL'"
 		},
+		"HTTPAPI_Copy_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
 		"LS_API_HTTTP_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/"
@@ -58,10 +58,6 @@
 		"Snowflake_SCDTYPE_properties_typeProperties_database": {
 			"type": "string",
 			"defaultValue": "LAB_DB"
-		},
-		"Snowflake_keyvalut_properties_typeProperties_database": {
-			"type": "string",
-			"defaultValue": "snowflake_learning_db"
 		},
 		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -149,6 +145,21 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/HTTPAPI_Copy')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('HTTPAPI_Copy_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LS_API_HTTTP')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -216,28 +227,6 @@
 					"password": {
 						"type": "SecureString",
 						"value": "[parameters('Snowflake_SCDTYPE_password')]"
-					}
-				},
-				"version": "1.1"
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Snowflake_keyvalut')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "SnowflakeV2",
-				"typeProperties": {
-					"authenticationType": "Basic",
-					"accountIdentifier": "zbyveck-bh87091",
-					"user": "mounika",
-					"database": "[parameters('Snowflake_keyvalut_properties_typeProperties_database')]",
-					"warehouse": "COMPUTE_WH",
-					"password": {
-						"type": "SecureString",
-						"value": "[parameters('Snowflake_keyvalut_password')]"
 					}
 				},
 				"version": "1.1"

@@ -6,172 +6,20 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "datafactorybymounikag"
+		},
+		"SNOWFLAKE_SCRIPT_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
+		},
+		"Snowflake_keyvalut_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/Lab_Patientdata_Ingest')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "SnowflakeV2Sink",
-								"importSettings": {
-									"type": "SnowflakeImportCopyCommand"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "PatientID",
-											"type": "String"
-										},
-										"sink": {
-											"name": "PATIENT_ID",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Department",
-											"type": "String"
-										},
-										"sink": {
-											"name": "DEPARTMENT",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "CheckupDate",
-											"type": "String"
-										},
-										"sink": {
-											"name": "CHECKUPDATE",
-											"type": "DateTime"
-										}
-									},
-									{
-										"source": {
-											"name": "HeartRate",
-											"type": "String"
-										},
-										"sink": {
-											"name": "HEARTRATE",
-											"type": "Int64"
-										}
-									},
-									{
-										"source": {
-											"name": "BloodPressure",
-											"type": "String"
-										},
-										"sink": {
-											"name": "BLOODPRESSURE",
-											"type": "Int64"
-										}
-									},
-									{
-										"source": {
-											"name": "BloodSugar\r",
-											"type": "String"
-										},
-										"sink": {
-											"name": "BLOODSUGAR",
-											"type": "Int64"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Blob_source_BySASURI_link_Forsnowflake",
-								"type": "DatasetReference",
-								"parameters": {
-									"param_container": "sales",
-									"param_folder": "patient",
-									"param_file": "Client_data.csv"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Dataset_snowflake_backuptable",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					},
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
-						"dependsOn": [
-							{
-								"activity": "Copy data1",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Video_1_Scenario2_table_to_json')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
@@ -229,204 +77,6 @@
 				},
 				"folder": {
 					"name": "Scenario-based Questions"
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/repeat_scenario1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SnowflakeV2Source",
-								"exportSettings": {
-									"type": "SnowflakeExportCopyCommand"
-								}
-							},
-							"sink": {
-								"type": "SnowflakeV2Sink",
-								"importSettings": {
-									"type": "SnowflakeImportCopyCommand"
-								}
-							},
-							"enableStaging": true,
-							"stagingSettings": {
-								"linkedServiceName": {
-									"referenceName": "Blob_for_snowflake_withSASURL",
-									"type": "LinkedServiceReference"
-								},
-								"path": "sales/staging/"
-							},
-							"enableSkipIncompatibleRow": true,
-							"logSettings": {
-								"enableCopyActivityLog": true,
-								"copyActivityLogSettings": {
-									"logLevel": "Info",
-									"enableReliableLogging": false
-								},
-								"logLocationSettings": {
-									"linkedServiceName": {
-										"referenceName": "ls_blob",
-										"type": "LinkedServiceReference"
-									},
-									"path": "raw/incompatablerows"
-								}
-							},
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "EMPID",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "EMPID",
-											"type": "Int64"
-										}
-									},
-									{
-										"source": {
-											"name": "ENAME",
-											"type": "String"
-										},
-										"sink": {
-											"name": "ENAME",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "JOB",
-											"type": "String"
-										},
-										"sink": {
-											"name": "JOB",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "DEPTNO",
-											"type": "Int64"
-										},
-										"sink": {
-											"name": "DEPTNO",
-											"type": "Int64"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "snowflakeDS",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_table": "EMP"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "snowflakeDS",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_table": "MP_TGT"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"folder": {
-					"name": "Practicescenarios"
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/repeate_scenario2')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SnowflakeV2Source",
-								"exportSettings": {
-									"type": "SnowflakeExportCopyCommand"
-								}
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": true,
-							"stagingSettings": {
-								"linkedServiceName": {
-									"referenceName": "Blob_for_snowflake_withSASURL",
-									"type": "LinkedServiceReference"
-								},
-								"path": "sales/josonsatge/"
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "snowflakeDS",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_table": "EMP"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Json1_target",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
 				},
 				"annotations": []
 			},
@@ -529,6 +179,50 @@
 					"quoteChar": "\""
 				},
 				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SOURCE_SCDTYPE2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "emp.csv",
+						"folderPath": "Emp",
+						"container": "sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "empid",
+						"type": "String"
+					},
+					{
+						"name": "ename",
+						"type": "String"
+					},
+					{
+						"name": "sal",
+						"type": "String"
+					},
+					{
+						"name": "dept_no",
+						"type": "String"
+					}
+				]
 			},
 			"dependsOn": []
 		},
@@ -894,64 +588,98 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DF_Schemadrift')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
+			"name": "[concat(parameters('factoryName'), '/target_ds_scdtype2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"type": "MappingDataFlow",
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
 				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "snowflakeDS",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "snowflakeDS",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						}
-					],
-					"transformations": [
-						{
-							"name": "derivedColumn1"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          EMPID as decimal(38,0),",
-						"          ENAME as string,",
-						"          JOB as string,",
-						"          DEPTNO as decimal(38,0)",
-						"     ),",
-						"     allowSchemaDrift: false,",
-						"     validateSchema: false,",
-						"     format: 'table') ~> source1",
-						"source1 derive(concatnameandjob = concat(ENAME,JOB)) ~> derivedColumn1",
-						"derivedColumn1 sink(allowSchemaDrift: false,",
-						"     validateSchema: false,",
-						"     input(",
-						"          EMPID as decimal(38,0),",
-						"          ENAME as string,",
-						"          JOB as string,",
-						"          DEPTNO as decimal(38,0)",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     stageInsert: true) ~> sink1"
-					]
-				}
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "emp_tgt.csv",
+						"folderPath": "target_scdtype",
+						"container": "destination"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "empid",
+						"type": "String"
+					},
+					{
+						"name": "ename",
+						"type": "String"
+					},
+					{
+						"name": "sal",
+						"type": "String"
+					},
+					{
+						"name": "deptno",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SNOWFLAKE_SCRIPT')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SnowflakeV2",
+				"typeProperties": {
+					"authenticationType": "Basic",
+					"accountIdentifier": "zbyveck-bh87091",
+					"user": "mounika",
+					"database": "[parameters('SNOWFLAKE_SCRIPT_properties_typeProperties_database')]",
+					"warehouse": "COMPUTE_WH",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "mounika"
+					}
+				},
+				"version": "1.1"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Snowflake_keyvalut')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SnowflakeV2",
+				"typeProperties": {
+					"authenticationType": "Basic",
+					"accountIdentifier": "zbyveck-bh87091",
+					"user": "mounika",
+					"database": "[parameters('Snowflake_keyvalut_properties_typeProperties_database')]",
+					"warehouse": "COMPUTE_WH",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "mounika"
+					}
+				},
+				"version": "1.1"
 			},
 			"dependsOn": []
 		},
@@ -1647,172 +1375,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Repeat_Scenario3')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "SnowflakeV2Sink",
-								"importSettings": {
-									"type": "SnowflakeImportCopyCommand"
-								}
-							},
-							"enableStaging": true,
-							"stagingSettings": {
-								"linkedServiceName": {
-									"referenceName": "Blob_for_snowflake_withSASURL",
-									"type": "LinkedServiceReference"
-								},
-								"path": "raw/statging"
-							},
-							"enableSkipIncompatibleRow": false,
-							"logSettings": {
-								"enableCopyActivityLog": true,
-								"copyActivityLogSettings": {
-									"logLevel": "Warning",
-									"enableReliableLogging": false
-								},
-								"logLocationSettings": {
-									"linkedServiceName": {
-										"referenceName": "Blob_for_snowflake_withSASURL",
-										"type": "LinkedServiceReference"
-									},
-									"path": "raw/logging"
-								}
-							},
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"name": "Manufacturer",
-											"type": "String"
-										},
-										"sink": {
-											"name": "MANUFACTURER",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Model",
-											"type": "String"
-										},
-										"sink": {
-											"name": "MODEL",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Engine size",
-											"type": "String"
-										},
-										"sink": {
-											"name": "ENGINE_SIZE",
-											"type": "Int64"
-										}
-									},
-									{
-										"source": {
-											"name": "Fuel type",
-											"type": "String"
-										},
-										"sink": {
-											"name": "FUEL_TYPE",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"name": "Year of manufacture",
-											"type": "String"
-										},
-										"sink": {
-											"name": "YAER_OF_MANUFACTURE",
-											"type": "Int64"
-										}
-									},
-									{
-										"source": {
-											"name": "Mileage",
-											"type": "String"
-										},
-										"sink": {
-											"name": "MILEAGE",
-											"type": "Int64"
-										}
-									},
-									{
-										"source": {
-											"name": "Price",
-											"type": "String"
-										},
-										"sink": {
-											"name": "PRICE",
-											"type": "Int64"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "Blob_all_parameters",
-								"type": "DatasetReference",
-								"parameters": {
-									"pa_container": "raw",
-									"pa_folder": "carsales",
-									"pa_filename": "car_sales_data.csv"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "snowflakeDS",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_table": "CAR_SALES_DATA2"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Repeat_Scenario4')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1976,6 +1538,200 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Blob_folder_parameter')]",
 				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Scenario1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1_oncontractconfigtable",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select * from dbo.CONTRACTS_CONFIG;",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "contract_configtable",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "ForEach1",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Lookup1_oncontractconfigtable",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Lookup1_oncontractconfigtable').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Get Metadata1",
+									"type": "GetMetadata",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "DelimitedText1",
+											"type": "DatasetReference",
+											"parameters": {
+												"param_foldername": {
+													"value": "@item().SOURCE_PATH",
+													"type": "Expression"
+												},
+												"param_filename": {
+													"value": "@item().FILENAME",
+													"type": "Expression"
+												}
+											}
+										},
+										"fieldList": [
+											"exists"
+										],
+										"storeSettings": {
+											"type": "AzureBlobStorageReadSettings",
+											"recursive": true,
+											"enablePartitionDiscovery": false
+										},
+										"formatSettings": {
+											"type": "DelimitedTextReadSettings"
+										}
+									}
+								},
+								{
+									"name": "If Condition1",
+									"type": "IfCondition",
+									"dependsOn": [
+										{
+											"activity": "Get Metadata1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"expression": {
+											"value": "@activity('Get Metadata1').output.exists",
+											"type": "Expression"
+										},
+										"ifTrueActivities": [
+											{
+												"name": "Copy data1",
+												"type": "Copy",
+												"dependsOn": [],
+												"policy": {
+													"timeout": "0.12:00:00",
+													"retry": 0,
+													"retryIntervalInSeconds": 30,
+													"secureOutput": false,
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"source": {
+														"type": "DelimitedTextSource",
+														"storeSettings": {
+															"type": "AzureBlobStorageReadSettings",
+															"recursive": true,
+															"enablePartitionDiscovery": false
+														},
+														"formatSettings": {
+															"type": "DelimitedTextReadSettings"
+														}
+													},
+													"sink": {
+														"type": "SnowflakeV2Sink",
+														"importSettings": {
+															"type": "SnowflakeImportCopyCommand"
+														}
+													},
+													"enableStaging": true,
+													"stagingSettings": {
+														"linkedServiceName": {
+															"referenceName": "Blob_for_snowflake_withSASURL",
+															"type": "LinkedServiceReference"
+														},
+														"path": "destination/staging/contracts"
+													}
+												},
+												"inputs": [
+													{
+														"referenceName": "DelimitedText1",
+														"type": "DatasetReference",
+														"parameters": {
+															"param_foldername": {
+																"value": "@item().SOURCE_PATH",
+																"type": "Expression"
+															},
+															"param_filename": {
+																"value": "@item().FILENAME",
+																"type": "Expression"
+															}
+														}
+													}
+												],
+												"outputs": [
+													{
+														"referenceName": "snowflake_dbtarget",
+														"type": "DatasetReference",
+														"parameters": {
+															"param_targettabel": {
+																"value": "@item().TARGET_TABLENAME",
+																"type": "Expression"
+															}
+														}
+													}
+												]
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DelimitedText1')]"
 			]
 		}
 	]

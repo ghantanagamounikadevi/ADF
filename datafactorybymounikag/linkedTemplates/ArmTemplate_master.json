@@ -19,10 +19,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'Snowflake_SCDTYPE'"
 		},
-		"Snowflake_keyvalut_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'Snowflake_keyvalut'"
-		},
 		"ls_ADLS_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_ADLS'"
@@ -51,6 +47,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'Blob_for_snowflake_withSASURL'"
 		},
+		"HTTPAPI_Copy_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
 		"LS_API_HTTTP_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/"
@@ -58,6 +58,10 @@
 		"RestService1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
+		"SNOWFLAKE_SCRIPT_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
 		},
 		"Snowflake1_properties_typeProperties_database": {
 			"type": "string",
@@ -69,7 +73,7 @@
 		},
 		"Snowflake_keyvalut_properties_typeProperties_database": {
 			"type": "string",
-			"defaultValue": "snowflake_learning_db"
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
 		},
 		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -131,9 +135,6 @@
 					"Snowflake_SCDTYPE_password": {
 						"value": "[parameters('Snowflake_SCDTYPE_password')]"
 					},
-					"Snowflake_keyvalut_password": {
-						"value": "[parameters('Snowflake_keyvalut_password')]"
-					},
 					"ls_ADLS_accountKey": {
 						"value": "[parameters('ls_ADLS_accountKey')]"
 					},
@@ -149,6 +150,9 @@
 					"Blob_for_snowflake_withSASURL_sasUri": {
 						"value": "[parameters('Blob_for_snowflake_withSASURL_sasUri')]"
 					},
+					"HTTPAPI_Copy_properties_typeProperties_url": {
+						"value": "[parameters('HTTPAPI_Copy_properties_typeProperties_url')]"
+					},
 					"LS_API_HTTTP_properties_typeProperties_url": {
 						"value": "[parameters('LS_API_HTTTP_properties_typeProperties_url')]"
 					},
@@ -160,9 +164,6 @@
 					},
 					"Snowflake_SCDTYPE_properties_typeProperties_database": {
 						"value": "[parameters('Snowflake_SCDTYPE_properties_typeProperties_database')]"
-					},
-					"Snowflake_keyvalut_properties_typeProperties_database": {
-						"value": "[parameters('Snowflake_keyvalut_properties_typeProperties_database')]"
 					},
 					"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
 						"value": "[parameters('blob_Trailproperties_properties_typeProperties_serviceEndpoint')]"
@@ -225,6 +226,12 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"SNOWFLAKE_SCRIPT_properties_typeProperties_database": {
+						"value": "[parameters('SNOWFLAKE_SCRIPT_properties_typeProperties_database')]"
+					},
+					"Snowflake_keyvalut_properties_typeProperties_database": {
+						"value": "[parameters('Snowflake_keyvalut_properties_typeProperties_database')]"
 					}
 				}
 			},
@@ -250,6 +257,26 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'datafactorybymounikag_ArmTemplate_2')]"
+			]
+		},
+		{
+			"name": "datafactorybymounikag_ArmTemplate_4",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'datafactorybymounikag_ArmTemplate_3')]"
 			]
 		}
 	]

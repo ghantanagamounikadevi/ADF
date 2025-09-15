@@ -19,10 +19,6 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'Snowflake_SCDTYPE'"
 		},
-		"Snowflake_keyvalut_password": {
-			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'Snowflake_keyvalut'"
-		},
 		"ls_ADLS_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'ls_ADLS'"
@@ -51,6 +47,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'sasUri' of 'Blob_for_snowflake_withSASURL'"
 		},
+		"HTTPAPI_Copy_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
 		"LS_API_HTTTP_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://raw.githubusercontent.com/"
@@ -58,6 +58,10 @@
 		"RestService1_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
+		"SNOWFLAKE_SCRIPT_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
 		},
 		"Snowflake1_properties_typeProperties_database": {
 			"type": "string",
@@ -69,7 +73,7 @@
 		},
 		"Snowflake_keyvalut_properties_typeProperties_database": {
 			"type": "string",
-			"defaultValue": "snowflake_learning_db"
+			"defaultValue": "SNOWFLAKE_LEARNING_DB"
 		},
 		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
 			"type": "string",
@@ -176,6 +180,88 @@
 				"[concat(variables('factoryId'), '/datasets/Blob_SCD')]",
 				"[concat(variables('factoryId'), '/datasets/snowflake_SCD_Stgtable')]",
 				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/CDC_SCDTYPE')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Lookup1_SOURCE_FILE_CDC",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SnowflakeV2Source",
+								"query": "SELECT ID,NAME FROM SOURCE_FILE_CDC WHERE LAST_MODIFIED_DATE >'2000-01-01 00:00:00.000'",
+								"exportSettings": {
+									"type": "SnowflakeExportCopyCommand"
+								}
+							},
+							"dataset": {
+								"referenceName": "snowflakeDS",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_table": "SOURCE_FILE_CDC"
+								}
+							}
+						}
+					},
+					{
+						"name": "Lookup2_WATERMARKTABLE",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SnowflakeV2Source",
+								"query": {
+									"value": "SELECT MAX(WATERMARK_VALUE) AS MAX_VALUE FROM WATERMARK",
+									"type": "Expression"
+								},
+								"exportSettings": {
+									"type": "SnowflakeExportCopyCommand"
+								}
+							},
+							"dataset": {
+								"referenceName": "snowflakeDS",
+								"type": "DatasetReference",
+								"parameters": {
+									"p_table": "WATERMARK"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"tablename": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/snowflakeDS')]"
 			]
 		},
 		{
@@ -1582,6 +1668,54 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/Blob_folder_parameter')]",
 				"[concat(variables('factoryId'), '/datasets/Blob_all_parameters')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SCDTYPE2')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow_SCDTYPE2",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow_SCDTYPE2",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourcefile": {},
+									"targetfile": {},
+									"sink1": {},
+									"sink2": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow_SCDTYPE2')]"
 			]
 		},
 		{
@@ -3707,6 +3841,56 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/repeat_scenario5_Schemadrift')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "DF_Schemadrift",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"source1": {
+										"p_table": "EMP"
+									},
+									"sink1": {
+										"p_table": "MP_TGT"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/DF_Schemadrift')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/repeate_scenario2')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -4039,6 +4223,52 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/Blob_for_snowflake_withSASURL')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SOURCE_SCDTYPE2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "emp.csv",
+						"folderPath": "Emp",
+						"container": "sales"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "empid",
+						"type": "String"
+					},
+					{
+						"name": "ename",
+						"type": "String"
+					},
+					{
+						"name": "sal",
+						"type": "String"
+					},
+					{
+						"name": "dept_no",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
 			]
 		},
 		{
@@ -4956,6 +5186,52 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/target_ds_scdtype2')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "ls_blob",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "emp_tgt.csv",
+						"folderPath": "target_scdtype",
+						"container": "destination"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "empid",
+						"type": "String"
+					},
+					{
+						"name": "ename",
+						"type": "String"
+					},
+					{
+						"name": "sal",
+						"type": "String"
+					},
+					{
+						"name": "deptno",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/ls_blob')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/vendor_config')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -5052,6 +5328,21 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/HTTPAPI_Copy')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "HttpServer",
+				"typeProperties": {
+					"url": "[parameters('HTTPAPI_Copy_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LS_API_HTTTP')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -5080,6 +5371,34 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SNOWFLAKE_SCRIPT')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SnowflakeV2",
+				"typeProperties": {
+					"authenticationType": "Basic",
+					"accountIdentifier": "zbyveck-bh87091",
+					"user": "mounika",
+					"database": "[parameters('SNOWFLAKE_SCRIPT_properties_typeProperties_database')]",
+					"warehouse": "COMPUTE_WH",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "mounika"
+					}
+				},
+				"version": "1.1"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/Snowflake1')]",
@@ -5139,13 +5458,19 @@
 					"database": "[parameters('Snowflake_keyvalut_properties_typeProperties_database')]",
 					"warehouse": "COMPUTE_WH",
 					"password": {
-						"type": "SecureString",
-						"value": "[parameters('Snowflake_keyvalut_password')]"
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "mounika"
 					}
 				},
 				"version": "1.1"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/blob_Trailproperties')]",
@@ -5320,97 +5645,6 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/credential1')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {
-					"resourceId": "/subscriptions/ea7de382-728e-4552-a83f-ad71977591e7/resourceGroups/ADF/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mounikamanagedidentity"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/credential2')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {
-					"resourceId": "/subscriptions/ea7de382-728e-4552-a83f-ad71977591e7/resourcegroups/ADF/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mounikamanagedidentity"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/credential2_forkeyvalut')]",
-			"type": "Microsoft.DataFactory/factories/credentials",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "ManagedIdentity",
-				"typeProperties": {
-					"resourceId": "/subscriptions/ea7de382-728e-4552-a83f-ad71977591e7/resourceGroups/ADF/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mounikamanagedidentity"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/repeat_scenario5_Schemadrift')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "DF_Schemadrift",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"source1": {
-										"p_table": "EMP"
-									},
-									"sink1": {
-										"p_table": "MP_TGT"
-									}
-								},
-								"linkedServiceParameters": {
-									"sink1": {
-										"schemaLinkedService": {}
-									}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/DF_Schemadrift')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/DF_Schemadrift')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -5473,6 +5707,191 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/snowflakeDS')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_SCDTYPE2')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_SOURCE_SCDTYPE2",
+								"type": "DatasetReference"
+							},
+							"name": "sourcefile"
+						},
+						{
+							"dataset": {
+								"referenceName": "target_ds_scdtype2",
+								"type": "DatasetReference"
+							},
+							"name": "targetfile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "target_ds_scdtype2",
+								"type": "DatasetReference"
+							},
+							"name": "sink1"
+						},
+						{
+							"dataset": {
+								"referenceName": "target_ds_scdtype2",
+								"type": "DatasetReference"
+							},
+							"name": "sink2"
+						}
+					],
+					"transformations": [
+						{
+							"name": "sourcemd5derivedcolumn"
+						},
+						{
+							"name": "derivedColumntargetmd5"
+						},
+						{
+							"name": "doesnotexists1"
+						},
+						{
+							"name": "select1"
+						},
+						{
+							"name": "exists1"
+						},
+						{
+							"name": "alterRow1"
+						},
+						{
+							"name": "notisactive"
+						},
+						{
+							"name": "exists2"
+						},
+						{
+							"name": "select2"
+						},
+						{
+							"name": "isactive"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          empid as string,",
+						"          ename as string,",
+						"          sal as string,",
+						"          dept_no as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourcefile",
+						"source(output(",
+						"          empid as string,",
+						"          ename as string,",
+						"          sal as string,",
+						"          deptno as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> targetfile",
+						"sourcefile derive(md5_source = md5(ename,sal,dept_no)) ~> sourcemd5derivedcolumn",
+						"targetfile derive(md5_target = md5(ename,sal,deptno)) ~> derivedColumntargetmd5",
+						"sourcemd5derivedcolumn, derivedColumntargetmd5 exists(md5_source == md5_target,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> doesnotexists1",
+						"isactive select(mapColumn(",
+						"          empid,",
+						"          ename,",
+						"          sal,",
+						"          dept_no",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select1",
+						"derivedColumntargetmd5, sourcemd5derivedcolumn exists(targetfile@empid == sourcefile@empid,",
+						"     negate:false,",
+						"     broadcast: 'auto')~> exists1",
+						"notisactive alterRow(updateIf(true())) ~> alterRow1",
+						"exists2 derive(isactive = 0) ~> notisactive",
+						"exists1, sourcemd5derivedcolumn exists(md5_target == md5_source,",
+						"     negate:true,",
+						"     broadcast: 'auto')~> exists2",
+						"alterRow1 select(mapColumn(",
+						"          empid,",
+						"          ename,",
+						"          sal,",
+						"          deptno,",
+						"          isactive",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> select2",
+						"doesnotexists1 derive(isactive = 1) ~> isactive",
+						"select1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          empid as string,",
+						"          ename as string,",
+						"          sal as string,",
+						"          deptno as string",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink1",
+						"select2 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          empid as string,",
+						"          ename as string,",
+						"          sal as string,",
+						"          deptno as string",
+						"     ),",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true) ~> sink2"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_SOURCE_SCDTYPE2')]",
+				"[concat(variables('factoryId'), '/datasets/target_ds_scdtype2')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/credential1')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/ea7de382-728e-4552-a83f-ad71977591e7/resourceGroups/ADF/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mounikamanagedidentity"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/credential2')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/ea7de382-728e-4552-a83f-ad71977591e7/resourcegroups/ADF/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mounikamanagedidentity"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/credential2_forkeyvalut')]",
+			"type": "Microsoft.DataFactory/factories/credentials",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {
+					"resourceId": "/subscriptions/ea7de382-728e-4552-a83f-ad71977591e7/resourceGroups/ADF/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mounikamanagedidentity"
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }

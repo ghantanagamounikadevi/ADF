@@ -14,9 +14,6 @@
 		"Snowflake_SCDTYPE_password": {
 			"value": ""
 		},
-		"Snowflake_keyvalut_password": {
-			"value": ""
-		},
 		"ls_ADLS_accountKey": {
 			"value": ""
 		},
@@ -38,11 +35,17 @@
 		"Blob_for_snowflake_withSASURL_sasUri": {
 			"value": ""
 		},
+		"HTTPAPI_Copy_properties_typeProperties_url": {
+			"value": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
 		"LS_API_HTTTP_properties_typeProperties_url": {
 			"value": "https://raw.githubusercontent.com/"
 		},
 		"RestService1_properties_typeProperties_url": {
 			"value": "https://github.com/ghantanagamounikadevi/ADF/blob/main/"
+		},
+		"SNOWFLAKE_SCRIPT_properties_typeProperties_database": {
+			"value": "SNOWFLAKE_LEARNING_DB"
 		},
 		"Snowflake1_properties_typeProperties_database": {
 			"value": "SNOWFLAKE_LEARNING_DB"
@@ -51,7 +54,7 @@
 			"value": "LAB_DB"
 		},
 		"Snowflake_keyvalut_properties_typeProperties_database": {
-			"value": "snowflake_learning_db"
+			"value": "SNOWFLAKE_LEARNING_DB"
 		},
 		"blob_Trailproperties_properties_typeProperties_serviceEndpoint": {
 			"value": "https://mounikapracticestorage.blob.core.windows.net/"
