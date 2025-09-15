@@ -7,7 +7,7 @@
 			"authenticationType": "Basic",
 			"accountIdentifier": "zbyveck-bh87091",
 			"user": "mounika",
-			"database": "snowflake_learning_db",
+			"database": "SNOWFLAKE_LEARNING_DB",
 			"warehouse": "COMPUTE_WH",
 			"password": {
 				"type": "AzureKeyVaultSecret",
