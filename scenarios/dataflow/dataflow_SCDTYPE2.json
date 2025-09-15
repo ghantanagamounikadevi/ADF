@@ -29,7 +29,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "target_ds_scdtype2",
+						"referenceName": "SnowflakeTable_SCDtype2TGT",
 						"type": "DatasetReference"
 					},
 					"name": "sink2"
@@ -49,9 +49,6 @@
 					"name": "select1"
 				},
 				{
-					"name": "exists1"
-				},
-				{
 					"name": "alterRow1"
 				},
 				{
@@ -65,6 +62,9 @@
 				},
 				{
 					"name": "isactive"
+				},
+				{
+					"name": "exists3"
 				}
 			],
 			"scriptLines": [
@@ -101,24 +101,25 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"derivedColumntargetmd5, sourcemd5derivedcolumn exists(targetfile@EMPID == sourcefile@EMPID,",
-				"     negate:false,",
-				"     broadcast: 'auto')~> exists1",
 				"notisactive alterRow(updateIf(true())) ~> alterRow1",
 				"exists2 derive(isactive = 0) ~> notisactive",
-				"exists1, sourcemd5derivedcolumn exists(md5_target == md5_source,",
+				"exists3, sourcemd5derivedcolumn exists(md5_target == md5_source,",
 				"     negate:true,",
 				"     broadcast: 'auto')~> exists2",
 				"alterRow1 select(mapColumn(",
-				"          empid,",
-				"          ename,",
-				"          sal,",
-				"          deptno,",
+				"          EMPID,",
+				"          ENAME,",
+				"          SAL,",
+				"          DEPTNO,",
+				"          IS_ACTIVE,",
 				"          isactive",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
 				"doesnotexists1 derive(isactive = 1) ~> isactive",
+				"derivedColumntargetmd5, sourcemd5derivedcolumn exists(targetfile@EMPID == sourcefile@EMPID,",
+				"     negate:false,",
+				"     broadcast: 'auto')~> exists3",
 				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
@@ -138,11 +139,17 @@
 				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
-				"          empid as string,",
-				"          ename as string,",
-				"          sal as string,",
-				"          deptno as string",
+				"          EMPID as decimal(38,0),",
+				"          ENAME as string,",
+				"          SAL as decimal(38,0),",
+				"          DEPTNO as decimal(38,0),",
+				"          IS_ACTIVE as decimal(38,0)",
 				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> sink2"
 			]
