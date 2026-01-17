@@ -1,12 +1,12 @@
 {
-	"name": "Blob_SCD",
+	"name": "ds_onprem",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "Blob_for_snowflake_withSASURL",
+			"referenceName": "ls_Onprem",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"pa_container": {
+			"param_file": {
 				"type": "string"
 			}
 		},
@@ -14,9 +14,9 @@
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobStorageLocation",
-				"container": {
-					"value": "@dataset().pa_container",
+				"type": "FileServerLocation",
+				"fileName": {
+					"value": "@dataset().param_file",
 					"type": "Expression"
 				}
 			},
@@ -27,19 +27,15 @@
 		},
 		"schema": [
 			{
+				"name": "sales_id",
+				"type": "String"
+			},
+			{
 				"name": "customer_id",
 				"type": "String"
 			},
 			{
 				"name": "product_id",
-				"type": "String"
-			},
-			{
-				"name": "invoice_date",
-				"type": "String"
-			},
-			{
-				"name": "total_sales",
 				"type": "String"
 			}
 		]

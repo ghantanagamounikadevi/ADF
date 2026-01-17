@@ -1,12 +1,10 @@
 {
-	"name": "control_fileload",
+	"name": "repeat_scenario5_Schemadrift",
 	"properties": {
 		"activities": [
 			{
 				"name": "Data flow1",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -17,6 +15,18 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_Schemadrift",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"source1": {
+								"p_table": "EMP"
+							},
+							"sink1": {
+								"p_table": "MP_TGT"
+							}
+						}
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"

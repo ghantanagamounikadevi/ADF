@@ -1,24 +1,18 @@
 {
-	"name": "Blob_SCD",
+	"name": "target_ds_scdtype2",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "Blob_for_snowflake_withSASURL",
+			"referenceName": "ls_blob",
 			"type": "LinkedServiceReference"
-		},
-		"parameters": {
-			"pa_container": {
-				"type": "string"
-			}
 		},
 		"annotations": [],
 		"type": "DelimitedText",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"container": {
-					"value": "@dataset().pa_container",
-					"type": "Expression"
-				}
+				"fileName": "emp_tgt.csv",
+				"folderPath": "target_scdtype",
+				"container": "destination"
 			},
 			"columnDelimiter": ",",
 			"escapeChar": "\\",
@@ -27,19 +21,19 @@
 		},
 		"schema": [
 			{
-				"name": "customer_id",
+				"name": "empid",
 				"type": "String"
 			},
 			{
-				"name": "product_id",
+				"name": "ename",
 				"type": "String"
 			},
 			{
-				"name": "invoice_date",
+				"name": "sal",
 				"type": "String"
 			},
 			{
-				"name": "total_sales",
+				"name": "deptno",
 				"type": "String"
 			}
 		]

@@ -1,5 +1,5 @@
 {
-	"name": "ADF_Snowflake_SCD",
+	"name": "repeate_scenario2",
 	"properties": {
 		"activities": [
 			{
@@ -16,21 +16,18 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureBlobStorageReadSettings",
-							"recursive": true,
-							"wildcardFileName": "*",
-							"enablePartitionDiscovery": false
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
+						"type": "SnowflakeV2Source",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
 						}
 					},
 					"sink": {
-						"type": "SnowflakeV2Sink",
-						"importSettings": {
-							"type": "SnowflakeImportCopyCommand"
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
 						}
 					},
 					"enableStaging": true,
@@ -39,29 +36,26 @@
 							"referenceName": "Blob_for_snowflake_withSASURL",
 							"type": "LinkedServiceReference"
 						},
-						"path": "sales/snowflakestaging/"
+						"path": "sales/josonsatge/"
 					}
 				},
 				"inputs": [
 					{
-						"referenceName": "Blob_SCD",
+						"referenceName": "snowflakeDS",
 						"type": "DatasetReference",
 						"parameters": {
-							"pa_container": "raw"
+							"p_table": "EMP"
 						}
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "snowflake_SCD_Stgtable",
+						"referenceName": "Json1_target",
 						"type": "DatasetReference"
 					}
 				]
 			}
 		],
-		"folder": {
-			"name": "Classes"
-		},
 		"annotations": []
 	}
 }

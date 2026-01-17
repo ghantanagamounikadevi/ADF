@@ -1,12 +1,10 @@
 {
-	"name": "control_fileload",
+	"name": "SCDTYPE2",
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "Data flow_SCDTYPE2",
 				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -17,6 +15,10 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"dataflow": {
+						"referenceName": "dataflow_SCDTYPE2",
+						"type": "DataFlowReference"
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"

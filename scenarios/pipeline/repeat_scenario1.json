@@ -1,0 +1,124 @@
+{
+	"name": "repeat_scenario1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						}
+					},
+					"sink": {
+						"type": "SnowflakeV2Sink",
+						"importSettings": {
+							"type": "SnowflakeImportCopyCommand"
+						}
+					},
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "Blob_for_snowflake_withSASURL",
+							"type": "LinkedServiceReference"
+						},
+						"path": "sales/staging/"
+					},
+					"enableSkipIncompatibleRow": true,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Info",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "ls_blob",
+								"type": "LinkedServiceReference"
+							},
+							"path": "raw/incompatablerows"
+						}
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "EMPID",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "EMPID",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "ENAME",
+									"type": "String"
+								},
+								"sink": {
+									"name": "ENAME",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "JOB",
+									"type": "String"
+								},
+								"sink": {
+									"name": "JOB",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "DEPTNO",
+									"type": "Int64"
+								},
+								"sink": {
+									"name": "DEPTNO",
+									"type": "Int64"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "snowflakeDS",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_table": "EMP"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "snowflakeDS",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_table": "MP_TGT"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Practicescenarios"
+		},
+		"annotations": []
+	}
+}

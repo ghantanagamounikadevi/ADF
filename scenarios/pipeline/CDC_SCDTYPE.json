@@ -1,0 +1,74 @@
+{
+	"name": "CDC_SCDTYPE",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup1_SOURCE_FILE_CDC",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"query": "SELECT ID,NAME FROM SOURCE_FILE_CDC WHERE LAST_MODIFIED_DATE >'2000-01-01 00:00:00.000'",
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						}
+					},
+					"dataset": {
+						"referenceName": "snowflakeDS",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_table": "SOURCE_FILE_CDC"
+						}
+					}
+				}
+			},
+			{
+				"name": "Lookup2_WATERMARKTABLE",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SnowflakeV2Source",
+						"query": {
+							"value": "SELECT MAX(WATERMARK_VALUE) AS MAX_VALUE FROM WATERMARK",
+							"type": "Expression"
+						},
+						"exportSettings": {
+							"type": "SnowflakeExportCopyCommand"
+						}
+					},
+					"dataset": {
+						"referenceName": "snowflakeDS",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_table": "WATERMARK"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"tablename": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}

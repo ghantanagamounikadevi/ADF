@@ -1,5 +1,5 @@
 {
-	"name": "Lab_Patientdata_Ingest",
+	"name": "Repeat_Scenario3",
 	"properties": {
 		"activities": [
 			{
@@ -32,67 +32,99 @@
 							"type": "SnowflakeImportCopyCommand"
 						}
 					},
-					"enableStaging": false,
+					"enableStaging": true,
+					"stagingSettings": {
+						"linkedServiceName": {
+							"referenceName": "Blob_for_snowflake_withSASURL",
+							"type": "LinkedServiceReference"
+						},
+						"path": "raw/statging"
+					},
+					"enableSkipIncompatibleRow": false,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Warning",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "Blob_for_snowflake_withSASURL",
+								"type": "LinkedServiceReference"
+							},
+							"path": "raw/logging"
+						}
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
 							{
 								"source": {
-									"name": "PatientID",
+									"name": "Manufacturer",
 									"type": "String"
 								},
 								"sink": {
-									"name": "PATIENT_ID",
+									"name": "MANUFACTURER",
 									"type": "String"
 								}
 							},
 							{
 								"source": {
-									"name": "Department",
+									"name": "Model",
 									"type": "String"
 								},
 								"sink": {
-									"name": "DEPARTMENT",
+									"name": "MODEL",
 									"type": "String"
 								}
 							},
 							{
 								"source": {
-									"name": "CheckupDate",
+									"name": "Engine size",
 									"type": "String"
 								},
 								"sink": {
-									"name": "CHECKUPDATE",
-									"type": "DateTime"
-								}
-							},
-							{
-								"source": {
-									"name": "HeartRate",
-									"type": "String"
-								},
-								"sink": {
-									"name": "HEARTRATE",
+									"name": "ENGINE_SIZE",
 									"type": "Int64"
 								}
 							},
 							{
 								"source": {
-									"name": "BloodPressure",
+									"name": "Fuel type",
 									"type": "String"
 								},
 								"sink": {
-									"name": "BLOODPRESSURE",
+									"name": "FUEL_TYPE",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"name": "Year of manufacture",
+									"type": "String"
+								},
+								"sink": {
+									"name": "YAER_OF_MANUFACTURE",
 									"type": "Int64"
 								}
 							},
 							{
 								"source": {
-									"name": "BloodSugar\r",
+									"name": "Mileage",
 									"type": "String"
 								},
 								"sink": {
-									"name": "BLOODSUGAR",
+									"name": "MILEAGE",
+									"type": "Int64"
+								}
+							},
+							{
+								"source": {
+									"name": "Price",
+									"type": "String"
+								},
+								"sink": {
+									"name": "PRICE",
 									"type": "Int64"
 								}
 							}
@@ -101,50 +133,24 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "Blob_source_BySASURI_link_Forsnowflake",
+						"referenceName": "Blob_all_parameters",
 						"type": "DatasetReference",
 						"parameters": {
-							"param_container": "sales",
-							"param_folder": "patient",
-							"param_file": "Client_data.csv"
+							"pa_container": "raw",
+							"pa_folder": "carsales",
+							"pa_filename": "car_sales_data.csv"
 						}
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "Dataset_snowflake_backuptable",
-						"type": "DatasetReference"
+						"referenceName": "snowflakeDS",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_table": "CAR_SALES_DATA2"
+						}
 					}
 				]
-			},
-			{
-				"name": "Data flow1",
-				"type": "ExecuteDataFlow",
-				"state": "Inactive",
-				"onInactiveMarkAs": "Succeeded",
-				"dependsOn": [
-					{
-						"activity": "Copy data1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
 			}
 		],
 		"annotations": []

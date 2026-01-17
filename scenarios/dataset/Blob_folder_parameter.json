@@ -1,12 +1,15 @@
 {
-	"name": "Blob_SCD",
+	"name": "Blob_folder_parameter",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "Blob_for_snowflake_withSASURL",
+			"referenceName": "ls_blob",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"pa_container": {
+			"p_container": {
+				"type": "string"
+			},
+			"p_folder": {
 				"type": "string"
 			}
 		},
@@ -15,8 +18,12 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
+				"folderPath": {
+					"value": "@dataset().p_folder",
+					"type": "Expression"
+				},
 				"container": {
-					"value": "@dataset().pa_container",
+					"value": "@dataset().p_container",
 					"type": "Expression"
 				}
 			},
@@ -25,23 +32,6 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "customer_id",
-				"type": "String"
-			},
-			{
-				"name": "product_id",
-				"type": "String"
-			},
-			{
-				"name": "invoice_date",
-				"type": "String"
-			},
-			{
-				"name": "total_sales",
-				"type": "String"
-			}
-		]
+		"schema": []
 	}
 }

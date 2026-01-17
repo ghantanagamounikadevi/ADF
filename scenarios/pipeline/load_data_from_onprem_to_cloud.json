@@ -1,5 +1,5 @@
 {
-	"name": "Video2_Scenario_PipelineAPI",
+	"name": "load_data_from_onprem_to_cloud",
 	"properties": {
 		"activities": [
 			{
@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@pipeline().parameters.lookup_value",
+						"value": "@pipeline().parameters.on_premfile",
 						"type": "Expression"
 					},
 					"isSequential": true,
@@ -30,8 +30,9 @@
 								"source": {
 									"type": "DelimitedTextSource",
 									"storeSettings": {
-										"type": "HttpReadSettings",
-										"requestMethod": "GET"
+										"type": "FileServerReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
 									},
 									"formatSettings": {
 										"type": "DelimitedTextReadSettings"
@@ -40,7 +41,7 @@
 								"sink": {
 									"type": "DelimitedTextSink",
 									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings"
+										"type": "AzureBlobStorageWriteSettings"
 									},
 									"formatSettings": {
 										"type": "DelimitedTextWriteSettings",
@@ -60,10 +61,10 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "ds_API",
+									"referenceName": "ds_onprem",
 									"type": "DatasetReference",
 									"parameters": {
-										"param_filename_Api": {
+										"param_file": {
 											"value": "@item().name",
 											"type": "Expression"
 										}
@@ -72,12 +73,13 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "ds_ADLS",
+									"referenceName": "Blob_all_parameters",
 									"type": "DatasetReference",
 									"parameters": {
-										"param_folder_adls": "api_files",
-										"param_file_adls": {
-											"value": "@{item().name}.csv",
+										"pa_container": "sales",
+										"pa_folder": "onprem",
+										"pa_filename": {
+											"value": "@item().name",
 											"type": "Expression"
 										}
 									}
@@ -90,6 +92,8 @@
 			{
 				"name": "Copy data2",
 				"type": "Copy",
+				"state": "Inactive",
+				"onInactiveMarkAs": "Succeeded",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
@@ -100,54 +104,22 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"source": {
-						"type": "RestSource",
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010",
-						"requestMethod": "GET",
-						"paginationRules": {
-							"supportRFC5988": "true"
-						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
 					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "RestResource1",
-						"type": "DatasetReference"
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "directblob",
-						"type": "DatasetReference"
-					}
-				]
+				}
 			}
 		],
 		"parameters": {
-			"lookup_value": {
+			"on_premfile": {
 				"type": "array",
 				"defaultValue": [
 					{
-						"name": "Contracts_details_feb.csv"
+						"name": "products.csv"
 					},
 					{
-						"name": "Contracts_details_jan.csv"
+						"name": "sales_jan.csv"
 					},
 					{
-						"name": "Contracts_details_march.csv"
+						"name": "sales_march.csv"
 					}
 				]
 			}

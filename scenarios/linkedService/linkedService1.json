@@ -1,5 +1,5 @@
 {
-	"name": "ls_blob",
+	"name": "linkedService1",
 	"properties": {
 		"annotations": [],
 		"type": "AzureBlobStorage",
@@ -11,6 +11,5 @@
 				"type": "CredentialReference"
 			}
 		}
-	},
-	"type": "Microsoft.DataFactory/factories/linkedservices"
+	}
 }
